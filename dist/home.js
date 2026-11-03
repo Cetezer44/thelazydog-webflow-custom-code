@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v1.4.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v1.5.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
@@ -45,22 +45,29 @@
     requestAnimationFrame(step);},delay||0);}
   function easeIn(p){return p*p*(3-2*p);} /* fermeture douce au début et à la fin */
   function easeOut(p){var q=1-p;return 1-q*q*q;}
-  function splitLines(h){ /* découpe le h1 en lignes réelles pour la révélation en masque */
-    var txt=h.textContent.replace(/\s+/g,' ').trim(),words=txt.split(' ');h.textContent='';
-    var spans=words.map(function(w,i){var s=document.createElement('span');s.textContent=w;h.appendChild(s);if(i<words.length-1)h.appendChild(document.createTextNode(' '));return s;});
-    var lines=[],top=null;spans.forEach(function(s){if(s.offsetTop!==top){lines.push([]);top=s.offsetTop;}lines[lines.length-1].push(s.textContent);});
+  function splitLines(h){ /* découpe le h1 en lignes réelles pour la révélation en masque (le gras est conservé) */
+    var html=h.innerHTML,words=[];
+    (function walk(node,wrap){[].slice.call(node.childNodes).forEach(function(n){
+      if(n.nodeType===3){n.textContent.split(/\s+/).forEach(function(w){if(!w)return;var s=document.createElement('span');s.textContent=w;words.push({el:s,wrap:wrap});});}
+      else if(n.nodeType===1){walk(n,n);}
+    });})(h,null);
     h.textContent='';
-    return {txt:txt,inners:lines.map(function(l){var o=document.createElement('span'),i=document.createElement('span');o.className='tld-line';i.className='tld-line__in';i.textContent=l.join(' ');o.appendChild(i);h.appendChild(o);return i;})};
+    words.forEach(function(w,i){var node=w.el;if(w.wrap){var c=w.wrap.cloneNode(false);c.appendChild(w.el);node=c;}w.node=node;h.appendChild(node);if(i<words.length-1)h.appendChild(document.createTextNode(' '));});
+    var lines=[],top=null;words.forEach(function(w){var t=w.el.getBoundingClientRect().top;if(top===null||Math.abs(t-top)>2){lines.push([]);top=t;}lines[lines.length-1].push(w.node);});
+    h.textContent='';
+    return {html:html,inners:lines.map(function(l){var o=document.createElement('span'),i=document.createElement('span');o.className='tld-line';i.className='tld-line__in';
+      l.forEach(function(node,k){if(k)i.appendChild(document.createTextNode(' '));i.appendChild(node);});o.appendChild(i);h.appendChild(o);return i;})};
   }
   function reveal(){ /* entrée de la page : œil qui s'ouvre, h1 ligne par ligne, navigation depuis chaque bord */
     if(eye){lid(eye,LID_OPEN,560,140,easeOut,function(){clearLid(eye);});}
     var h=document.querySelector('.tld-hero__title'),last=0;
     if(h){var sp=splitLines(h);sp.inners.forEach(function(el,i){last=i;
       el.animate([{transform:'translateY(110%)'},{transform:'translateY(0)'}],{duration:1000,delay:160+i*130,easing:OUT,fill:'backwards'});});
-      setTimeout(function(){h.textContent=sp.txt;},160+last*130+1050);}
+      setTimeout(function(){h.innerHTML=sp.html;},160+last*130+1050);}
     [].forEach.call(document.querySelectorAll('.tld-nav__link'),function(el){
       var c=el.classList,base=getComputedStyle(el).transform;base=(base==='none')?'':' '+base;
-      var off=(c.contains('is-tl')||c.contains('is-tr'))?'translateY(-56px)':(c.contains('is-bl')||c.contains('is-br'))?'translateY(56px)':c.contains('is-vl')?'translateX(-56px)':'translateX(56px)';
+      var r=el.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight,dl=r.left,dr=vw-r.right,dt=r.top,db=vh-r.bottom,m=Math.min(dl,dr,dt,db); /* arrive par le bord le plus proche */
+      var off=m===dt?'translateY(-56px)':m===db?'translateY(56px)':m===dl?'translateX(-56px)':'translateX(56px)';
       el.animate([{transform:off+base,opacity:0},{transform:(base?base.trim():'none'),opacity:1}],{duration:1000,delay:420,easing:OUT,fill:'backwards'});
     });
     [].forEach.call(document.querySelectorAll('.tld-reel'),function(el){
@@ -274,4 +281,74 @@
     }
     sync();
   });
+})();
+
+/* --- src/home/words.js --- */
+/* The Lazy Dog — texte qui s'écrit mot par mot au scroll.
+   Tout élément [data-words] : chaque mot apparaît à son tour pendant que l'élément traverse l'écran
+   (le gras, les liens, etc. sont conservés). */
+(function(){
+  var els=[].slice.call(document.querySelectorAll('[data-words]'));if(!els.length)return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  els.forEach(function(el){
+    var words=[];
+    (function walk(node){[].slice.call(node.childNodes).forEach(function(n){
+      if(n.nodeType===3){
+        var frag=document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(function(part){if(!part)return;
+          if(/^\s+$/.test(part)){frag.appendChild(document.createTextNode(part));return;}
+          var s=document.createElement('span');s.className='tld-word';s.textContent=part;
+          s.style.display='inline-block';s.style.opacity=0;s.style.transform='translateY(.35em)';s.style.willChange='opacity,transform';
+          frag.appendChild(s);words.push(s);});
+        n.parentNode.replaceChild(frag,n);
+      }else if(n.nodeType===1){walk(n);}
+    });})(el);
+    el._words=words;
+  });
+  var ticking=false;
+  function update(){
+    ticking=false;var vh=window.innerHeight;
+    els.forEach(function(el){
+      var r=el.getBoundingClientRect(),start=vh*.9,end=vh*.4; /* commence quand le haut du texte entre à 90 % de l'écran, finit quand le bas atteint 40 % */
+      var p=(start-r.top)/Math.max(1,r.height+start-end);p=Math.max(0,Math.min(1,p));
+      var n=el._words.length,shown=p*(n+2);
+      el._words.forEach(function(w,i){var o=Math.max(0,Math.min(1,shown-i));if(w._o===o)return;w._o=o;
+        w.style.opacity=o;w.style.transform=o>=1?'none':'translateY('+(.35*(1-o)).toFixed(3)+'em)';});
+    });
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
+  window.addEventListener('scroll',req,{passive:true});window.addEventListener('resize',req);req();
+})();
+
+/* --- src/home/parallax.js --- */
+/* The Lazy Dog — parallax au scroll.
+   [data-parallax] (cadre en overflow:hidden) : l'image à l'intérieur glisse plus lentement que le cadre. Valeur = amplitude (défaut 0.12 = 12 % de la hauteur).
+   [data-speed] : l'élément entier avance plus vite ou plus lentement que la page (ex. 0.1 = 10 % de la hauteur de l'écran).
+   [data-speeds="0,0.08,…"] sur une liste : une vitesse par élément de la liste. Désactivé sur mobile. */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var frames=[].slice.call(document.querySelectorAll('[data-parallax]')).map(function(el){
+    var img=el.querySelector('img');if(!img)return null;
+    var a=parseFloat(el.getAttribute('data-parallax'));if(!(a>0))a=.12;
+    img.style.position='absolute';img.style.left='0';img.style.width='100%';img.style.maxWidth='none';
+    img.style.top=(-a*100)+'%';img.style.height=((1+2*a)*100)+'%';img.style.objectFit='cover';img.style.willChange='transform';
+    return {el:el,img:img,a:a};
+  }).filter(Boolean);
+  var movers=[].slice.call(document.querySelectorAll('[data-speed]')).map(function(el){return {el:el,s:parseFloat(el.getAttribute('data-speed'))||0};}).filter(function(m){return m.s;});
+  /* [data-speeds="0,0.08,…"] sur une liste (ex. Collection List) : une vitesse par enfant, dans l'ordre */
+  [].forEach.call(document.querySelectorAll('[data-speeds]'),function(list){var sp=list.getAttribute('data-speeds').split(',').map(parseFloat);
+    [].forEach.call(list.children,function(ch,i){var v=sp[i%sp.length];if(v)movers.push({el:ch,s:v});});});
+  if(!frames.length&&!movers.length)return;
+  var ticking=false;
+  function prog(r,vh){return (vh-r.top)/(vh+r.height);} /* 0 = juste sous l'écran, 1 = juste au-dessus */
+  function update(){
+    ticking=false;var vh=window.innerHeight,mobile=window.innerWidth<768;
+    frames.forEach(function(f){var r=f.el.getBoundingClientRect();if(r.bottom<-200||r.top>vh+200)return;
+      var p=Math.max(0,Math.min(1,prog(r,vh)));f.img.style.transform='translate3d(0,'+((.5-p)*2*f.a*r.height).toFixed(1)+'px,0)';});
+    movers.forEach(function(m){var r=m.el.getBoundingClientRect();
+      var p=prog({top:r.top-(m._y||0),height:r.height},vh),y=mobile?0:(.5-p)*m.s*vh;m._y=y;
+      m.el.style.transform=y?'translate3d(0,'+y.toFixed(1)+'px,0)':'';});
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
+  window.addEventListener('scroll',req,{passive:true});window.addEventListener('resize',req);req();
 })();

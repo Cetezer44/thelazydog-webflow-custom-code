@@ -5,7 +5,7 @@ import { minify } from 'terser';
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 const bundles = {
   // Page d'accueil — l'ordre compte : le loader prépare la page, les autres scripts s'y branchent.
-  home: ['src/home/loader.js', 'src/home/stickers.js', 'src/home/eye.js', 'src/home/showreel.js'],
+  home: ['src/home/loader.js', 'src/home/stickers.js', 'src/home/eye.js', 'src/home/showreel.js', 'src/home/words.js', 'src/home/parallax.js'],
   // Toutes les pages
   global: ['src/global/cursor.js'],
 };

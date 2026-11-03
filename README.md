@@ -10,6 +10,8 @@ Code JavaScript du site Webflow **The Lazy Dog**, servi par [jsDelivr](https://w
 | `src/home/stickers.js` | Stickers du hero : chute avec gravité (Matter.js), poussés par la souris au survol (tap = saut sur mobile), showreel en obstacle | Page d'accueil |
 | `src/home/eye.js` | Logo œil du header : l'image du sprite change selon la position du curseur | Page d'accueil |
 | `src/home/showreel.js` | Showreel en boucle, curseur play/pause au survol, clic = lecture/pause | Page d'accueil |
+| `src/home/words.js` | Texte qui s'écrit mot par mot au scroll (`[data-words]`) | Page d'accueil |
+| `src/home/parallax.js` | Parallax au scroll : image dans son cadre (`[data-parallax]`) et décalage des cartes projets (`[data-speeds]`, `[data-speed]`) | Page d'accueil |
 | `src/global/cursor.js` | Curseur étoile (normal / survol / clic) en mode difference | Toutes les pages |
 | `webflow/*.html` | Copies de référence des embeds qui restent dans Webflow (CSS + balisage du loader et du showreel) | — |
 
@@ -45,4 +47,6 @@ Les liens actuels pointent sur le hash d'un commit : la version servie ne change
 - Œil : `data-eye`, `data-eye-frames` (22), `data-eye-range` (distance en px pour l'image extrême), `data-eye-src` (sprite).
 - Showreel : `data-reel`, `data-reel-src` (vidéo), `data-reel-poster` (image d'attente).
 - Stickers (images dans `.tld-stickers`) : `data-sticker`, `data-x` (point de chute sur une largeur de 1440 px), `data-y` (position si « réduire les animations »), `data-w` (largeur en px à 1440), `data-rot` (rotation de départ). `data-scale` (taille), `data-gravity` (gravité), `data-bounce` (rebond), `data-push` (force de la souris) et `data-matter-src` sur `.tld-stickers` permettent de régler la physique et de changer l'URL de Matter.js.
+- Texte mot par mot : `data-words` sur un paragraphe (le gras `<strong>` est conservé).
+- Parallax : `data-parallax="0.12"` sur un cadre `overflow: hidden` contenant une image (amplitude en fraction de la hauteur) ; `data-speeds="0,0.08,0,0.14,0.05"` sur une liste (une vitesse par enfant, en fraction de la hauteur d'écran) ou `data-speed` sur un élément. Désactivé sur mobile et si « réduire les animations ».
 - Curseur : tout élément avec `data-cursor="hover"` déclenche l'état survol.
