@@ -7,7 +7,7 @@ Code JavaScript du site Webflow **The Lazy Dog**, servi par [jsDelivr](https://w
 | Fichier | Rôle | Où il est appelé |
 |---|---|---|
 | `src/home/loader.js` | Loader « THE LAZY DOG » (Step 0 → 5), clignement de l'œil, révélation du H1 ligne par ligne, entrée de la navigation | Page d'accueil |
-| `src/home/stickers.js` | Stickers du hero : chute avec gravité (Matter.js), glisser-déposer / lancer, showreel en obstacle | Page d'accueil |
+| `src/home/stickers.js` | Stickers du hero : chute avec gravité (Matter.js), poussés par la souris au survol (tap = saut sur mobile), showreel en obstacle | Page d'accueil |
 | `src/home/eye.js` | Logo œil du header : l'image du sprite change selon la position du curseur | Page d'accueil |
 | `src/home/showreel.js` | Showreel en boucle, curseur play/pause au survol, clic = lecture/pause | Page d'accueil |
 | `src/global/cursor.js` | Curseur étoile (normal / survol / clic) en mode difference | Toutes les pages |
@@ -44,5 +44,5 @@ Les liens actuels pointent sur le hash d'un commit : la version servie ne change
 
 - Œil : `data-eye`, `data-eye-frames` (22), `data-eye-range` (distance en px pour l'image extrême), `data-eye-src` (sprite).
 - Showreel : `data-reel`, `data-reel-src` (vidéo), `data-reel-poster` (image d'attente).
-- Stickers (images dans `.tld-stickers`) : `data-sticker`, `data-x` (point de chute sur une largeur de 1440 px), `data-y` (position si « réduire les animations »), `data-w` (largeur en px à 1440), `data-rot` (rotation de départ). `data-scale` (taille), `data-gravity` (gravité), `data-bounce` (rebond) et `data-matter-src` sur `.tld-stickers` permettent de régler la physique et de changer l'URL de Matter.js.
+- Stickers (images dans `.tld-stickers`) : `data-sticker`, `data-x` (point de chute sur une largeur de 1440 px), `data-y` (position si « réduire les animations »), `data-w` (largeur en px à 1440), `data-rot` (rotation de départ). `data-scale` (taille), `data-gravity` (gravité), `data-bounce` (rebond), `data-push` (force de la souris) et `data-matter-src` sur `.tld-stickers` permettent de régler la physique et de changer l'URL de Matter.js.
 - Curseur : tout élément avec `data-cursor="hover"` déclenche l'état survol.
