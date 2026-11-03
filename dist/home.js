@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v1.5.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v1.6.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
@@ -108,7 +108,8 @@
 
 /* --- src/home/stickers.js --- */
 /* The Lazy Dog — stickers du hero : chute avec gravité (Matter.js), la souris les pousse au survol (tap = saut sur mobile).
-   Zone de jeu = premier écran ; le showreel est un obstacle (les stickers tombent dessus ou de chaque côté).
+   Zone de jeu = toute la page sous le haut du hero. Le « sol » suit le bas de l'écran : quand on scrolle, les stickers
+   continuent de tomber, sauf si un élément les arrête (showreel, visuels des projets, ou tout élément [data-sticker-stop]).
    Chaque image [data-sticker] dans .tld-stickers : data-x = point de chute (sur 1440 px), data-y = position si mouvement réduit, data-w = largeur, data-rot = rotation.
    Réglages sur .tld-stickers : data-scale (taille, défaut 1.25), data-gravity (gravité, défaut 0.55) et data-bounce (rebond, défaut 0.75), data-push (force de la souris, défaut 1). */
 (function(){
@@ -120,15 +121,19 @@
   var SCALE=parseFloat(wrap.getAttribute('data-scale'))||1.25;   /* taille des stickers (1 = maquette) */
   var GRAVITY=parseFloat(wrap.getAttribute('data-gravity'))||0.55; /* gravité (1 = « terrestre ») */
   var BOUNCE=parseFloat(wrap.getAttribute('data-bounce'));if(isNaN(BOUNCE))BOUNCE=0.75; /* rebond (0 = aucun, 1 = maximum) */
-  var W,H,k,R=null;
-  function measure(){ /* zone de jeu : le premier écran ; le showreel est un obstacle, les stickers peuvent tomber de chaque côté */
-    var top=hero.getBoundingClientRect().top+(window.pageYOffset||0);
-    W=hero.clientWidth;H=Math.max(320,(document.documentElement.clientHeight||window.innerHeight)-top);
+  var W,H,k,top0=0;
+  function measure(){ /* zone de jeu : du haut du hero jusqu'en bas de la page */
+    top0=hero.getBoundingClientRect().top+(window.pageYOffset||0);
+    wrap.style.height='0px';
+    var docH=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);
+    W=hero.clientWidth;H=Math.max(320,docH-top0);
     wrap.style.height=H+'px';
     k=Math.max(.5,Math.min(1,W/1440))*SCALE;
-    R=null;
-    if(reel&&reel.offsetParent===hero&&reel.offsetTop<H-8){R={x:reel.offsetLeft,y:reel.offsetTop,w:reel.offsetWidth};}
   }
+  function stops(){ /* éléments qui arrêtent les stickers */
+    return [].slice.call(document.querySelectorAll('.tld-reel,.tld-work__media,[data-sticker-stop]'));
+  }
+  function screenBottom(){return Math.min(H,(window.innerHeight||document.documentElement.clientHeight)-wrap.getBoundingClientRect().top);}
   function loadImg(img){img.loading='eager';return new Promise(function(res){if(img.complete&&img.naturalWidth)return res();img.addEventListener('load',res,{once:true});img.addEventListener('error',res,{once:true});});}
   function loadMatter(){return new Promise(function(res,rej){if(window.Matter)return res();var s=document.createElement('script');s.src=MATTER;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
   function sizeOf(img){var w=(parseFloat(img.getAttribute('data-w'))||150)*k,r=(img.naturalWidth&&img.naturalHeight)?img.naturalHeight/img.naturalWidth:1;return {w:w,h:w*r};}
@@ -146,16 +151,32 @@
   function run(){
     var M=window.Matter,Eng=M.Engine,Bodies=M.Bodies,Body=M.Body,Comp=M.Composite,Con=M.Constraint;
     var engine=Eng.create({enableSleeping:true});engine.gravity.y=GRAVITY;
-    var T=400,walls=[];
-    function placeWalls(){ /* sol = bas du premier écran, murs gauche/droite, plafond lointain, + le haut du showreel en obstacle */
+    var T=400,walls=[],obs=[],floor=null,floorY=0;
+    function rel(el){var r=el.getBoundingClientRect(),w=wrap.getBoundingClientRect();return {x:r.left-w.left,y:r.top-w.top,w:r.width,h:r.height};}
+    function wakeAll(){Comp.allBodies(engine.world).forEach(function(b){if(!b.isStatic)M.Sleeping.set(b,false);});}
+    function placeWalls(){ /* murs gauche/droite + plafond lointain ; sol = bas de l'écran (ne remonte jamais) ; obstacles = éléments « stop » */
       if(walls.length)Comp.remove(engine.world,walls);
-      walls=[Bodies.rectangle(W/2,H+T/2,W+2*T,T,{isStatic:true}),
-        Bodies.rectangle(-T/2,H/2-1500,T,H+3000+2*T,{isStatic:true}),
+      if(obs.length)Comp.remove(engine.world,obs.map(function(o){return o.body;}));
+      walls=[Bodies.rectangle(-T/2,H/2-1500,T,H+3000+2*T,{isStatic:true}),
         Bodies.rectangle(W+T/2,H/2-1500,T,H+3000+2*T,{isStatic:true}),
         Bodies.rectangle(W/2,-3000-T/2,W+2*T,T,{isStatic:true})];
-      if(R){walls.push(Bodies.rectangle(R.x+R.w/2,(R.y+H)/2,R.w,H-R.y,{isStatic:true,chamfer:{radius:[10,10,0,0]}}));}
-      Comp.add(engine.world,walls);
+      floorY=Math.max(floorY,screenBottom());
+      floor=Bodies.rectangle(W/2,floorY+T/2,W+2*T,T,{isStatic:true});walls.push(floor);
+      obs=[];
+      stops().forEach(function(el){var r=rel(el);if(r.w<4||r.h<4)return;
+        var b=Bodies.rectangle(r.x+r.w/2,r.y+r.h/2,r.w,r.h,{isStatic:true,chamfer:{radius:Math.min(8,r.h/2)}});
+        obs.push({el:el,body:b,w:r.w,h:r.h});});
+      Comp.add(engine.world,walls.concat(obs.map(function(o){return o.body;})));
     }
+    function track(){ /* le sol descend avec le scroll ; les obstacles suivent leur élément (parallax compris) */
+      var moved=false,f=Math.max(floorY,screenBottom());
+      if(f>floorY+.5){floorY=f;Body.setPosition(floor,{x:W/2,y:floorY+T/2});moved=true;}
+      obs.forEach(function(o){var r=rel(o.el);if(Math.abs(r.w-o.w)>1||Math.abs(r.h-o.h)>1){needRebuild=true;return;}
+        var c={x:r.x+r.w/2,y:r.y+r.h/2},p=o.body.position;
+        if(Math.abs(c.x-p.x)>.3||Math.abs(c.y-p.y)>.3){Body.setPosition(o.body,c);moved=true;}});
+      if(moved)wakeAll();
+    }
+    var needRebuild=false;
     placeWalls();
     var list=[];
     items.forEach(function(img,i){
@@ -173,10 +194,10 @@
     var raf=null,last=0,visible=true;
     function rescue(){ /* garde-fou : un sticker sorti de la zone (ou invalide) est remis en haut et retombe */
       list.forEach(function(it){var b=it.body,s=it.img._s,q=b.position;
-        if(!isFinite(q.x)||!isFinite(q.y)||q.y>H+s.h||q.x<-s.w||q.x>W+s.w){
+        if(!isFinite(q.x)||!isFinite(q.y)||q.y>floorY+s.h||q.x<-s.w||q.x>W+s.w){
           Body.setPosition(b,{x:Math.min(W-s.w/2,Math.max(s.w/2,isFinite(q.x)?q.x:W/2)),y:-s.h});Body.setVelocity(b,{x:0,y:0});Body.setAngularVelocity(b,0);}});
     }
-    function loop(t){raf=requestAnimationFrame(loop);var dt=last?Math.max(8,Math.min(16.667,t-last)):16.667;last=t;Eng.update(engine,dt);rescue();sync();}
+    function loop(t){raf=requestAnimationFrame(loop);var dt=last?Math.max(8,Math.min(16.667,t-last)):16.667;last=t;if(needRebuild){needRebuild=false;placeWalls();}track();Eng.update(engine,dt);rescue();sync();}
     function play(){if(!raf){last=0;raf=requestAnimationFrame(loop);}}
     function pause(){if(raf){cancelAnimationFrame(raf);raf=null;}}
     if('IntersectionObserver' in window){new IntersectionObserver(function(es){visible=es[0].isIntersecting;visible?play():pause();}).observe(wrap);}
@@ -203,9 +224,11 @@
       M.Query.point(bodies,local(e)).forEach(function(b){M.Sleeping.set(b,false);
         Body.setVelocity(b,{x:(Math.random()-.5)*6,y:-9*PUSH});Body.setAngularVelocity(b,(Math.random()-.5)*.3);});
     },{passive:true});
-    /* redimensionnement : on recale les murs et on garde les stickers dans la zone */
-    var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){measure();placeWalls();
-      list.forEach(function(it){var b=it.body,s=it.img._s;var y=Math.min(H-s.h/2,b.position.y);if(R&&b.position.x>R.x-s.w/2&&b.position.x<R.x+R.w+s.w/2)y=Math.min(y,R.y-s.h/2);Body.setPosition(b,{x:Math.min(W-s.w/2,Math.max(s.w/2,b.position.x)),y:y});M.Sleeping.set(b,false);});},150);});
+    /* redimensionnement (fenêtre ou hauteur de la page) : on recale la zone, les murs et les stickers */
+    var rt;function refit(){clearTimeout(rt);rt=setTimeout(function(){measure();floorY=Math.min(floorY,H);placeWalls();
+      list.forEach(function(it){var b=it.body,s=it.img._s;Body.setPosition(b,{x:Math.min(W-s.w/2,Math.max(s.w/2,b.position.x)),y:Math.min(floorY-s.h/2,b.position.y)});M.Sleeping.set(b,false);});},150);}
+    window.addEventListener('resize',refit);
+    if('ResizeObserver' in window){var lastH=document.body.offsetHeight;new ResizeObserver(function(){var h=document.body.offsetHeight;if(Math.abs(h-lastH)>2){lastH=h;refit();}}).observe(document.body);}
   }
   /* démarrage : après le loader (évènement tld:revealed), sinon dès le chargement */
   function go(){if(wrap._started)return;wrap._started=true;start();}
@@ -284,40 +307,38 @@
 })();
 
 /* --- src/home/words.js --- */
-/* The Lazy Dog — texte qui s'écrit mot par mot au scroll.
-   Tout élément [data-words] : chaque mot apparaît à son tour pendant que l'élément traverse l'écran
-   (le gras, les liens, etc. sont conservés). */
+/* The Lazy Dog — texte qui s'écrit mot par mot.
+   Tout élément [data-words] : quand il entre dans l'écran, ses mots apparaissent un par un, à leur rythme
+   (indépendamment de la vitesse du scroll). Le gras, les liens, etc. sont conservés.
+   Réglages facultatifs : data-words-delay (ms entre deux mots, défaut 55), data-words-duration (ms par mot, défaut 500). */
 (function(){
   var els=[].slice.call(document.querySelectorAll('[data-words]'));if(!els.length)return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var EASE='cubic-bezier(.22,1,.36,1)';
   els.forEach(function(el){
-    var words=[];
+    var words=[],dur=parseFloat(el.getAttribute('data-words-duration'))||500;
     (function walk(node){[].slice.call(node.childNodes).forEach(function(n){
       if(n.nodeType===3){
         var frag=document.createDocumentFragment();
         n.textContent.split(/(\s+)/).forEach(function(part){if(!part)return;
           if(/^\s+$/.test(part)){frag.appendChild(document.createTextNode(part));return;}
           var s=document.createElement('span');s.className='tld-word';s.textContent=part;
-          s.style.display='inline-block';s.style.opacity=0;s.style.transform='translateY(.35em)';s.style.willChange='opacity,transform';
+          s.style.display='inline-block';s.style.opacity=0;s.style.transform='translateY(.4em)';
+          s.style.transition='opacity '+dur+'ms '+EASE+',transform '+dur+'ms '+EASE;
           frag.appendChild(s);words.push(s);});
         n.parentNode.replaceChild(frag,n);
       }else if(n.nodeType===1){walk(n);}
     });})(el);
     el._words=words;
   });
-  var ticking=false;
-  function update(){
-    ticking=false;var vh=window.innerHeight;
-    els.forEach(function(el){
-      var r=el.getBoundingClientRect(),start=vh*.9,end=vh*.4; /* commence quand le haut du texte entre à 90 % de l'écran, finit quand le bas atteint 40 % */
-      var p=(start-r.top)/Math.max(1,r.height+start-end);p=Math.max(0,Math.min(1,p));
-      var n=el._words.length,shown=p*(n+2);
-      el._words.forEach(function(w,i){var o=Math.max(0,Math.min(1,shown-i));if(w._o===o)return;w._o=o;
-        w.style.opacity=o;w.style.transform=o>=1?'none':'translateY('+(.35*(1-o)).toFixed(3)+'em)';});
-    });
+  function play(el){
+    if(el._played)return;el._played=true;
+    var step=parseFloat(el.getAttribute('data-words-delay'))||55;
+    el._words.forEach(function(w,i){w.style.transitionDelay=(i*step)+'ms';w.style.opacity=1;w.style.transform='none';});
   }
-  function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
-  window.addEventListener('scroll',req,{passive:true});window.addEventListener('resize',req);req();
+  if(!('IntersectionObserver' in window)){els.forEach(play);return;}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){play(e.target);io.unobserve(e.target);}});},{rootMargin:'0px 0px -15% 0px',threshold:.15});
+  els.forEach(function(el){io.observe(el);});
 })();
 
 /* --- src/home/parallax.js --- */
