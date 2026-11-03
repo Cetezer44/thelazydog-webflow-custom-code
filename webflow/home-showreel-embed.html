@@ -1,0 +1,21 @@
+<style>
+/* Showreel — vidéo + curseur play/pause (le src se règle dans l'attribut data-reel-src du bloc .tld-reel) */
+.tld-reel{background-image:url("https://cdn.prod.website-files.com/6ae85d20a3e66e2f6d964099/6ae8b7a38bec22a16c5686db_tld-showreel-poster.png");background-size:cover;background-position:50% 50%;background-repeat:no-repeat}
+.tld-reel video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
+.tld-reel video:not([src]){display:none}
+.tld-reel__cursor{position:fixed;top:0;left:0;z-index:60;width:0;height:0;pointer-events:none;mix-blend-mode:difference;opacity:0;transform:translate3d(-200px,-200px,0);transition:opacity .2s ease}
+.tld-reel__ring{position:absolute;left:-25px;top:-25px;width:50px;height:50px;border:1px solid #edeae2;border-radius:50%;color:#edeae2;display:flex;align-items:center;justify-content:center;transform:scale(.5);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.tld-reel.is-hover .tld-reel__cursor{opacity:1}
+.tld-reel.is-hover .tld-reel__ring{transform:scale(1)}
+.tld-reel__ring svg{width:14px;height:14px;display:block}
+.tld-reel__ring .i-play{display:none;margin-left:2px}
+.tld-reel.is-paused .tld-reel__ring .i-play{display:block}
+.tld-reel.is-paused .tld-reel__ring .i-pause{display:none}
+.tld-reel:focus-visible{outline:2px solid #16140f;outline-offset:4px}
+@media (hover:none),(pointer:coarse){.tld-reel{cursor:pointer}.tld-reel__cursor{position:absolute;top:50%;left:50%;transform:none!important}.tld-reel.is-paused .tld-reel__cursor{opacity:1}.tld-reel.is-paused .tld-reel__ring{transform:scale(1)}}
+</style>
+<video muted loop playsinline preload="metadata" aria-label="Showreel The Lazy Dog"></video>
+<div class="tld-reel__cursor" aria-hidden="true"><div class="tld-reel__ring">
+<svg class="i-play" viewBox="0 0 14 14" fill="none"><path d="M3 1.5v11L12 7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+<svg class="i-pause" viewBox="0 0 14 14" fill="none"><path d="M4.5 2v10M9.5 2v10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+</div></div>
