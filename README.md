@@ -20,13 +20,13 @@ Code JavaScript du site Webflow **The Lazy Dog**, servi par [jsDelivr](https://w
 **Page d'accueil → Settings → Custom code → Before `</body>`**
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Cetezer44/thelazydog-webflow-custom-code@v1.0.0/dist/home.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Cetezer44/thelazydog-webflow-custom-code@a5ffea3cacec246793f25ac42519ae0b23edc63f/dist/home.min.js"></script>
 ```
 
 **Site settings → Custom code → Footer**
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Cetezer44/thelazydog-webflow-custom-code@v1.0.0/dist/global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Cetezer44/thelazydog-webflow-custom-code@a5ffea3cacec246793f25ac42519ae0b23edc63f/dist/global.min.js"></script>
 ```
 
 Le loader a besoin de l'embed « Loader – The Lazy Dog » placé en haut du Body de la page d'accueil : il affiche le loader avant tout chargement de script (pas de flash de la page).
@@ -35,13 +35,10 @@ Le loader a besoin de l'embed « Loader – The Lazy Dog » placé en haut du Bo
 
 1. Modifier les fichiers dans `src/`.
 2. `npm install` (une fois) puis `npm run build` pour régénérer `dist/`.
-3. Commit, puis créer un nouveau tag de version :
-   ```bash
-   git tag v1.0.1 && git push origin main --tags
-   ```
-4. Dans Webflow, remplacer `@v1.0.0` par `@v1.0.1` dans les deux liens, puis publier.
+3. Commit + push, puis figer la version : soit avec un tag (`git tag v1.0.1 && git push --tags`, ou une Release sur GitHub), soit en utilisant directement le hash du commit.
+4. Dans Webflow, remplacer la référence après `@` dans les deux liens (hash du commit ou `v1.0.1`), puis publier.
 
-Pourquoi un tag plutôt que `@main` : jsDelivr met les branches en cache jusqu'à 12 h, alors qu'une version taguée est servie tout de suite et ne change plus. Pour tester sans créer de tag, on peut utiliser `@main` puis vider le cache via `https://purge.jsdelivr.net/gh/Cetezer44/thelazydog-webflow-custom-code@main/dist/home.min.js`.
+Les liens actuels pointent sur le hash d'un commit : la version servie ne change jamais tant qu'on ne modifie pas le lien. On évite `@nom-de-branche` en production : jsDelivr met les branches en cache jusqu'à 12 h (purge possible via `https://purge.jsdelivr.net/gh/Cetezer44/thelazydog-webflow-custom-code@<branche>/dist/home.min.js`).
 
 ## Attributs utilisés dans Webflow
 
