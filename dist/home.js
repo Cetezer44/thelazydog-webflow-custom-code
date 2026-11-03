@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v1.1.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v1.2.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme au centre et se rouvre dans le header */
@@ -92,7 +92,7 @@
 /* The Lazy Dog — stickers du hero : chute avec gravité (Matter.js) puis glisser-déposer / lancer.
    Zone de jeu = premier écran ; le showreel est un obstacle (les stickers tombent dessus ou de chaque côté).
    Chaque image [data-sticker] dans .tld-stickers : data-x = point de chute (sur 1440 px), data-y = position si mouvement réduit, data-w = largeur, data-rot = rotation.
-   Réglages sur .tld-stickers : data-scale (taille, défaut 1.25) et data-gravity (gravité, défaut 0.55). */
+   Réglages sur .tld-stickers : data-scale (taille, défaut 1.25), data-gravity (gravité, défaut 0.55) et data-bounce (rebond, défaut 0.75). */
 (function(){
   var wrap=document.querySelector('.tld-stickers');if(!wrap)return;
   var hero=wrap.closest('.tld-hero')||wrap.parentNode,reel=document.querySelector('.tld-reel');
@@ -101,6 +101,7 @@
   var MATTER=wrap.getAttribute('data-matter-src')||'https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js';
   var SCALE=parseFloat(wrap.getAttribute('data-scale'))||1.25;   /* taille des stickers (1 = maquette) */
   var GRAVITY=parseFloat(wrap.getAttribute('data-gravity'))||0.55; /* gravité (1 = « terrestre ») */
+  var BOUNCE=parseFloat(wrap.getAttribute('data-bounce'));if(isNaN(BOUNCE))BOUNCE=0.75; /* rebond (0 = aucun, 1 = maximum) */
   var W,H,k,R=null;
   function measure(){ /* zone de jeu : le premier écran ; le showreel est un obstacle, les stickers peuvent tomber de chaque côté */
     var top=hero.getBoundingClientRect().top+(window.pageYOffset||0);
@@ -140,7 +141,7 @@
     placeWalls();
     var list=[];
     items.forEach(function(img,i){
-      var s=sizeOf(img),a=s.w/s.h,opt={restitution:.32,friction:.35,frictionAir:.02,density:.0016,angle:(parseFloat(img.getAttribute('data-rot'))||0)*Math.PI/180};
+      var s=sizeOf(img),a=s.w/s.h,opt={restitution:BOUNCE,friction:.3,frictionAir:.018,density:.0016,angle:(parseFloat(img.getAttribute('data-rot'))||0)*Math.PI/180};
       var x=Math.min(W-s.w/2,Math.max(s.w/2,(parseFloat(img.getAttribute('data-x'))||720)/1440*W));
       var y=-s.h-40-i*90;
       var body=(a>.85&&a<1.18)?Bodies.circle(x,y,Math.min(s.w,s.h)/2*.95,opt):Bodies.rectangle(x,y,s.w*.94,s.h*.86,Object.assign({chamfer:{radius:Math.min(s.w,s.h)*.3}},opt));

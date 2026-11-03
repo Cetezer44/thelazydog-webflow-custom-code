@@ -44,5 +44,5 @@ Les liens actuels pointent sur le hash d'un commit : la version servie ne change
 
 - Œil : `data-eye`, `data-eye-frames` (22), `data-eye-range` (distance en px pour l'image extrême), `data-eye-src` (sprite).
 - Showreel : `data-reel`, `data-reel-src` (vidéo), `data-reel-poster` (image d'attente).
-- Stickers (images dans `.tld-stickers`) : `data-sticker`, `data-x` (point de chute sur une largeur de 1440 px), `data-y` (position si « réduire les animations »), `data-w` (largeur en px à 1440), `data-rot` (rotation de départ). `data-matter-src` sur `.tld-stickers` permet de changer l'URL de Matter.js.
+- Stickers (images dans `.tld-stickers`) : `data-sticker`, `data-x` (point de chute sur une largeur de 1440 px), `data-y` (position si « réduire les animations »), `data-w` (largeur en px à 1440), `data-rot` (rotation de départ). `data-scale` (taille), `data-gravity` (gravité), `data-bounce` (rebond) et `data-matter-src` sur `.tld-stickers` permettent de régler la physique et de changer l'URL de Matter.js.
 - Curseur : tout élément avec `data-cursor="hover"` déclenche l'état survol.
