@@ -1,7 +1,7 @@
-/*! The Lazy Dog — home.js v1.2.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v1.3.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
-   THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme au centre et se rouvre dans le header */
+   THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
 (function(){
   var root=document.documentElement,loader=document.querySelector('.tld-loader');
   if(!loader||!root.classList.contains('tld-loading'))return;
@@ -34,6 +34,17 @@
     to(id,{x:v[0],y:v[1],r:v[2]},dur,t0+(jitter?Math.round(rnd(0,jitter)):0),ease);});}
   var THE=['t','h','e'],LAZY=['l','a','z','y'],DOG=['d','o','g'],ALL=THE.concat(LAZY,DOG);
   var eye=document.querySelector('.tld-eye'),OUT='cubic-bezier(.16,1,.3,1)';
+  /* paupière : masque ovale (relevé sur les Steps 5 → 9 de la maquette). Valeurs [centre Y, rayon X, rayon Y] en unités de l'œil (43,2 px) */
+  var LID_CLOSE=[[-5.6,55,2],[12.4,31,14],[25.4,31,27]],LID_OPEN=[[25.4,31,27],[12.4,31,14],[-1.1,31,.5]];
+  function setLid(el,v){var u=el.offsetWidth/43.2,m='radial-gradient(ellipse '+(v[1]*u)+'px '+(v[2]*u)+'px at '+(el.offsetWidth/2)+'px '+(v[0]*u)+'px, transparent 97%, #000 100%)';
+    el.style.webkitMaskImage=m;el.style.maskImage=m;el.style.webkitMaskRepeat=el.style.maskRepeat='no-repeat';}
+  function clearLid(el){el.style.webkitMaskImage=el.style.maskImage='';}
+  function lid(el,fr,dur,delay,ease,done){setTimeout(function(){var t0=null;
+    function step(now){if(t0===null)t0=now;var p=Math.min(1,(now-t0)/dur),e=ease(p),seg=(fr.length-1)*e,i=Math.min(fr.length-2,Math.max(0,Math.floor(seg))),f=seg-i,a=fr[i],b=fr[i+1];
+      setLid(el,[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f]);if(p<1)requestAnimationFrame(step);else if(done)done();}
+    requestAnimationFrame(step);},delay||0);}
+  function easeIn(p){return p*p*(3-2*p);} /* fermeture douce au début et à la fin */
+  function easeOut(p){var q=1-p;return 1-q*q*q;}
   function splitLines(h){ /* découpe le h1 en lignes réelles pour la révélation en masque */
     var txt=h.textContent.replace(/\s+/g,' ').trim(),words=txt.split(' ');h.textContent='';
     var spans=words.map(function(w,i){var s=document.createElement('span');s.textContent=w;h.appendChild(s);if(i<words.length-1)h.appendChild(document.createTextNode(' '));return s;});
@@ -42,7 +53,7 @@
     return {txt:txt,inners:lines.map(function(l){var o=document.createElement('span'),i=document.createElement('span');o.className='tld-line';i.className='tld-line__in';i.textContent=l.join(' ');o.appendChild(i);h.appendChild(o);return i;})};
   }
   function reveal(){ /* entrée de la page : œil qui s'ouvre, h1 ligne par ligne, navigation depuis chaque bord */
-    if(eye){eye.animate([{clipPath:'inset(50% 0 50% 0)',transform:'scaleY(.7)'},{clipPath:'inset(-10% 0 -10% 0)',transform:'scaleY(1)'}],{duration:650,easing:'cubic-bezier(.3,1.5,.5,1)',fill:'backwards'});}
+    if(eye){lid(eye,LID_OPEN,560,140,easeOut,function(){clearLid(eye);});}
     var h=document.querySelector('.tld-hero__title'),last=0;
     if(h){var sp=splitLines(h);sp.inners.forEach(function(el,i){last=i;
       el.animate([{transform:'translateY(110%)'},{transform:'translateY(0)'}],{duration:1000,delay:160+i*130,easing:OUT,fill:'backwards'});});
@@ -59,6 +70,7 @@
   }
   function revealed(){window.dispatchEvent(new CustomEvent('tld:revealed'));}
   function finish(){
+    if(eye&&!reduce)setLid(eye,LID_OPEN[0]); /* l'œil du header apparaît fermé */
     root.classList.remove('tld-loading');
     loader.parentNode&&loader.parentNode.removeChild(loader);
     if(!reduce)reveal();else revealed();
@@ -76,16 +88,15 @@
   move(ALL,3,2280,700,E.spread,70);
   /* Step 4 : les lignes se resserrent et s'imbriquent */
   move(ALL,4,3020,520,E.snap,40);
-  /* Step 5 : les lettres s'envolent, l'œil se recentre puis se ferme (paupières vers le centre) */
+  /* Step 5 : les autres lettres s'envolent */
   var t5=3640;
   ALL.forEach(function(id,i){if(id==='o')return;var p=L[id];
     to(id,{x:p.x*1.35+rnd(-20,20),y:p.y+rnd(40,90),r:p.r+rnd(-70,70),s:.2,o:0},520,t5+i*28,E.out);});
-  to('o',{x:0,y:0,s:1.25},560,t5,E.move);
-  var svgO=L.o.el.querySelector('svg');
-  svgO.animate([{clipPath:'inset(0% 0 0% 0)',transform:'scaleY(1)'},{clipPath:'inset(46% 0 46% 0)',transform:'scaleY(.92)',offset:.85},{clipPath:'inset(50% 0 50% 0)',transform:'scaleY(.9)'}],{duration:340,delay:t5+620,easing:'cubic-bezier(.55,0,.75,.2)',fill:'forwards'});
-  bg.animate([{opacity:1},{opacity:0}],{duration:420,delay:t5+980,easing:'ease',fill:'forwards'});
-  /* l'œil du header s'ouvre ensuite (reveal) */
-  setTimeout(finish,t5+1420);
+  /* l'œil reste en place : la paupière ovale descend et le ferme (Steps 5 → 7) */
+  lid(L.o.el,LID_CLOSE,440,t5+380,easeIn);
+  bg.animate([{opacity:1},{opacity:0}],{duration:400,delay:t5+900,easing:'ease',fill:'forwards'});
+  /* l'œil du header se rouvre ensuite (Steps 8 → 9, dans reveal) */
+  setTimeout(finish,t5+1320);
 })();
 
 /* --- src/home/stickers.js --- */
