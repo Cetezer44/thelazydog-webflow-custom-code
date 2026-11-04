@@ -1,0 +1,22 @@
+<!-- Section catégories : balisage de référence (reconstruit dans Webflow avec ces classes et attributs) -->
+<section class="tld-cats" data-cats><div class="tld-cats__pin" data-cats-pin><div class="tld-cats__inner"><div class="tld-cats__list"><div class="tld-cats__bar" data-cat-bar><div class="tld-cats__fill"></div></div><div class="tld-cats__row" data-cat><span class="tld-cats__name">Publicité</span></div><div class="tld-cats__row" data-cat><span class="tld-cats__name">Film de marque</span></div><div class="tld-cats__row" data-cat><span class="tld-cats__name">Vulgarisation</span></div><div class="tld-cats__row" data-cat><span class="tld-cats__name">Corporate</span></div><div class="tld-cats__row" data-cat><span class="tld-cats__name">Animation 2D &amp; 3D</span></div></div><div class="tld-cats__panels"><div class="tld-cats__panel" data-cat-panel><p class="tld-cats__text">Un spot qui accroche en quelques secondes et qu’on retient longtemps. On imagine des campagnes animées pour le web, les réseaux sociaux et la télé, pensées pour vos objectifs et déclinées pour chaque format de diffusion.</p><a href="#" class="tld-btn">Découvrir</a></div><div class="tld-cats__panel" data-cat-panel><p class="tld-cats__text">Une marque, c’est une histoire avant d’être un logo. On la raconte en mouvement, avec un univers graphique qui vous ressemble et une narration qui donne envie d’en savoir plus. Le film de marque, c’est votre identité en version animée : vivante, sincère et mémorable.</p><a href="#" class="tld-btn">Découvrir</a></div><div class="tld-cats__panel" data-cat-panel><p class="tld-cats__text">Rendre simple ce qui ne l’est pas. On transforme un sujet technique, un process ou une offre complexe en un film clair et agréable à suivre, pour que votre public comprenne vite et retienne l’essentiel.</p><a href="#" class="tld-btn">Découvrir</a></div><div class="tld-cats__panel" data-cat-panel><p class="tld-cats__text">Onboarding, culture d’entreprise, résultats annuels, communication interne : on donne du relief à vos messages pour embarquer vos équipes et vos partenaires, avec un ton qui vous ressemble.</p><a href="#" class="tld-btn">Découvrir</a></div><div class="tld-cats__panel" data-cat-panel><p class="tld-cats__text">Du motion design à la 3D en passant par l’illustration animée, on choisit la technique qui sert le mieux votre histoire. Chaque film est conçu sur mesure, du storyboard jusqu’au mixage final.</p><a href="#" class="tld-btn">Découvrir</a></div></div></div></div></section>
+
+<style>
+.tld-cats{position:relative}
+.tld-cats__pin{padding-top:180px;padding-left:60px;padding-right:40px}
+.tld-cats__inner{display:flex;align-items:flex-start;gap:150px}
+.tld-cats__list{position:relative;width:586px;max-width:100%;flex:none}
+.tld-cats__bar{position:absolute;left:0;top:0;width:100%;height:72px;pointer-events:none;transition:transform .45s cubic-bezier(.65,0,.35,1)}
+.tld-cats__fill{width:100%;height:100%;background-color:#ff581c;transform:scaleX(0);transform-origin:0 50%}
+.tld-cats__row{position:relative;display:flex;align-items:center;height:72px}
+.tld-cats__name{font-family:Xmind;font-weight:300;font-size:20px;line-height:1.3;color:#0c1016;transition:transform .45s cubic-bezier(.65,0,.35,1)}
+.tld-cats__panels{position:relative;width:330px;max-width:100%;transition:transform .45s cubic-bezier(.65,0,.35,1)}
+.tld-cats__panel{position:absolute;top:0;left:0;width:100%;opacity:0;transform:translateY(12px);transition:opacity .35s ease,transform .45s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.tld-cats__text{margin:0;font-family:Xmind;font-weight:300;font-size:16px;line-height:1.3;color:#0c1016}
+.tld-btn{display:inline-block;margin-top:31px;padding:10px 20px;border:1px solid #0c1016;border-radius:20px;font-family:Xmind;font-weight:400;font-size:14px;line-height:1;color:#0c1016;text-decoration:none;transition:background-color .2s ease,color .2s ease}
+.tld-btn:hover{background-color:#0c1016;color:#f3efe9}
+.tld-cats__row+.tld-cats__row{border-top:1px solid #0c1016}
+.tld-cats__row.is-active .tld-cats__name{font-weight:500;transform:translateX(24px)}
+.tld-cats__panel.is-active{opacity:1;transform:none;pointer-events:auto}
+@media (max-width:767px){.tld-cats__inner{display:block}.tld-cats__panels{margin-top:32px;transform:none!important}.tld-cats__pin{padding-left:24px;padding-right:24px;padding-top:110px}}
+</style>

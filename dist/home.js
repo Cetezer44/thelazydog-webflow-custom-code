@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v1.7.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v1.8.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
@@ -392,4 +392,79 @@
     if(el._title){el._title.style.opacity=1;el._title.style.transform='none';}
   });},{rootMargin:'0px 0px -10% 0px',threshold:0});
   els.forEach(function(el){io.observe(el);});
+})();
+
+/* --- src/home/reel-grow.js --- */
+/* The Lazy Dog — showreel qui grandit au scroll.
+   Au départ le showreel est carré (data-grow-from, défaut 350 px) ; en scrollant il s'élargit jusqu'à data-grow-to
+   (défaut 0.8 = 80 % de la largeur de l'écran) en prenant le format 16:9 (data-grow-ratio, défaut 16/9).
+   La place finale est réservée dès le départ : le reste de la page ne bouge pas pendant l'animation. */
+(function(){
+  var reel=document.querySelector('[data-grow]');if(!reel)return;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var FROM=parseFloat(reel.getAttribute('data-grow-from'))||350,TO=parseFloat(reel.getAttribute('data-grow-to'))||.8;
+  var RATIO=(function(r){if(!r)return 16/9;var m=r.split('/');return m.length===2?parseFloat(m[0])/parseFloat(m[1]):parseFloat(r)||16/9;})(reel.getAttribute('data-grow-ratio'));
+  var top0=0,vw=0,vh=0,box=0,w0,w1,h1,ticking=false;
+  function ease(p){return p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;}
+  function measure(){
+    vw=document.documentElement.clientWidth;vh=window.innerHeight;
+    box=reel.parentNode.clientWidth-(parseFloat(getComputedStyle(reel.parentNode).paddingLeft)||0)-(parseFloat(getComputedStyle(reel.parentNode).paddingRight)||0);
+    if(!(box>0))box=vw;w1=vw<768?box:Math.min(vw*TO,box);
+    h1=w1/RATIO;w0=Math.min(FROM,w1*.7);
+    var y=0,el=reel;while(el){y+=el.offsetTop;el=el.offsetParent;}top0=y;
+  }
+  function update(){
+    ticking=false;
+    var end=Math.max(1,top0-(vh-h1)/2),p=reduce?1:Math.max(0,Math.min(1,(window.pageYOffset||0)/end)),e=ease(p);
+    var w=w0+(w1-w0)*e,h=w0+(h1-w0)*e;
+    reel.style.width=w.toFixed(1)+'px';reel.style.height=h.toFixed(1)+'px';
+    reel.style.marginBottom=(h1-h).toFixed(1)+'px'; /* garde la hauteur finale réservée */
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
+  function init(){measure();update();}
+  init();
+  window.addEventListener('scroll',req,{passive:true});
+  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(init,120);});
+  window.addEventListener('load',init);
+})();
+
+/* --- src/home/categories.js --- */
+/* The Lazy Dog — section catégories (Publicité, Film de marque…) épinglée au scroll.
+   [data-cats] : la section ; [data-cats-pin] : le bloc qui reste fixé à l'écran ; [data-cat] : chaque ligne de catégorie ;
+   [data-cat-panel] : le paragraphe de chaque catégorie (même ordre) ; [data-cat-bar] : le rectangle de couleur (avec un enfant de remplissage).
+   En scrollant, le rectangle se construit de gauche à droite sur la catégorie active, puis passe à la suivante ;
+   le paragraphe correspondant s'affiche. data-cats-step (défaut 0.6) = scroll par catégorie, en hauteur d'écran. */
+(function(){
+  var sec=document.querySelector('[data-cats]');if(!sec)return;
+  var pin=sec.querySelector('[data-cats-pin]'),rows=[].slice.call(sec.querySelectorAll('[data-cat]')),panels=[].slice.call(sec.querySelectorAll('[data-cat-panel]'));
+  var bar=sec.querySelector('[data-cat-bar]'),fill=bar&&bar.firstElementChild,wrap=panels.length&&panels[0].parentNode;
+  if(!pin||!rows.length)return;
+  var n=rows.length,STEP=parseFloat(sec.getAttribute('data-cats-step'))||.6,reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cur=-1,ticking=false,stacked=false;
+  if(fill){fill.style.transformOrigin='0 50%';fill.style.willChange='transform';}
+  function layout(){
+    var vh=window.innerHeight;
+    sec.style.height=(vh+n*STEP*vh)+'px';pin.style.position='sticky';pin.style.top='0px';pin.style.height=vh+'px';
+    stacked=window.innerWidth<768;
+    if(wrap){var mh=0;panels.forEach(function(p){mh=Math.max(mh,p.offsetHeight);});wrap.style.minHeight=mh+'px';}
+    cur=-1;update();
+  }
+  function set(i){
+    if(i===cur)return;cur=i;
+    rows.forEach(function(r,j){r.classList.toggle('is-active',j===i);});
+    panels.forEach(function(p,j){p.classList.toggle('is-active',j===i);p.setAttribute('aria-hidden',j===i?'false':'true');});
+    var r=rows[i];
+    if(bar){bar.style.transform='translateY('+r.offsetTop+'px)';bar.style.height=r.offsetHeight+'px';}
+    if(wrap)wrap.style.transform=stacked?'':'translateY('+(r.offsetTop+4)+'px)';
+  }
+  function update(){
+    ticking=false;
+    var r=sec.getBoundingClientRect(),vh=window.innerHeight,len=Math.max(1,r.height-vh);
+    var t=Math.max(0,Math.min(.99999,-r.top/len)),x=t*n,i=Math.floor(x),local=reduce?1:x-i;
+    set(i);if(fill)fill.style.transform='scaleX('+Math.min(1,local*1.15).toFixed(4)+')';
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
+  window.addEventListener('scroll',req,{passive:true});
+  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(layout,120);});
+  window.addEventListener('load',layout);layout();
 })();
