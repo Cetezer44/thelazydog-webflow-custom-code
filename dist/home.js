@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v1.9.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v2.0.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
@@ -308,6 +308,7 @@
 /* The Lazy Dog — texte qui s'écrit mot par mot.
    Tout élément [data-words] : quand il entre dans l'écran, ses mots apparaissent un par un, à leur rythme
    (indépendamment de la vitesse du scroll). Le gras, les liens, etc. sont conservés.
+   data-words-wait : n'écrit le texte qu'à la réception de l'évènement « tld:words » sur l'élément (déclenché par un autre script).
    Réglages facultatifs : data-words-delay (ms entre deux mots, défaut 55), data-words-duration (ms par mot, défaut 500). */
 (function(){
   var els=[].slice.call(document.querySelectorAll('[data-words]'));if(!els.length)return;
@@ -334,6 +335,8 @@
     var step=parseFloat(el.getAttribute('data-words-delay'))||55;
     el._words.forEach(function(w,i){w.style.transitionDelay=(i*step)+'ms';w.style.opacity=1;w.style.transform='none';});
   }
+  els.forEach(function(el){el.addEventListener('tld:words',function(){play(el);});});
+  els=els.filter(function(el){return !el.hasAttribute('data-words-wait');});
   if(!('IntersectionObserver' in window)){els.forEach(play);return;}
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){play(e.target);io.unobserve(e.target);}});},{rootMargin:'0px 0px -15% 0px',threshold:.15});
   els.forEach(function(el){io.observe(el);});
@@ -374,10 +377,10 @@
 
 /* --- src/home/reveal.js --- */
 /* The Lazy Dog — apparition des projets par un masque de haut en bas.
-   Chaque visuel .tld-work__media (ou tout élément [data-reveal]) se dévoile du haut vers le bas quand il entre dans l'écran ;
+   Tout élément [data-reveal] se dévoile du haut vers le bas quand il entre dans l'écran ;
    le titre du projet (.tld-work__title) apparaît juste après. Réglage facultatif : data-reveal-duration (ms, défaut 1100). */
 (function(){
-  var els=[].slice.call(document.querySelectorAll('.tld-work__media,[data-reveal]'));if(!els.length)return;
+  var els=[].slice.call(document.querySelectorAll('[data-reveal]'));if(!els.length)return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
   var EASE='cubic-bezier(.77,0,.18,1)';
   els.forEach(function(el){
@@ -398,7 +401,9 @@
 /* The Lazy Dog — showreel qui grandit au scroll.
    Au départ le showreel est carré (data-grow-from, défaut 350 px) ; en scrollant il s'élargit jusqu'à data-grow-to
    (défaut 0.7 = 70 % de la largeur de l'écran) en prenant le format 16:9 (data-grow-ratio, défaut 16/9).
-   La place finale est réservée dès le départ : le reste de la page ne bouge pas pendant l'animation. */
+   La place finale est réservée dès le départ : le reste de la page ne bouge pas pendant l'animation.
+   data-grow-snap : depuis le premier écran, un geste de scroll vers le bas emmène directement au showreel en grand
+   (et vers le haut, ramène tout en haut). */
 (function(){
   var reel=document.querySelector('[data-grow]');if(!reel)return;
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -413,6 +418,7 @@
     h1=w1/RATIO;w0=Math.min(FROM,w1*.7);
     var y=0,el=reel;while(el){y+=el.offsetTop;el=el.offsetParent;}top0=y;
   }
+  function endY(){return Math.max(1,top0-(vh-h1)/2);}
   function update(){
     ticking=false;
     var end=Math.max(1,top0-(vh-h1)/2),p=reduce?1:Math.max(0,Math.min(1,(window.pageYOffset||0)/end)),e=ease(p);
@@ -426,34 +432,89 @@
   window.addEventListener('scroll',req,{passive:true});
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(init,120);});
   window.addEventListener('load',init);
+  /* ancre : premier écran <-> showreel */
+  if(reel.hasAttribute('data-grow-snap')&&!reduce){
+    var anim=null,lock=0;
+    function go(to){
+      var from=window.pageYOffset||0,t0=null,D=Math.min(1300,Math.max(700,Math.abs(to-from)*1.3));
+      if(anim)cancelAnimationFrame(anim);lock=Date.now()+D+250;
+      document.documentElement.style.scrollBehavior='auto';
+      (function step(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D);window.scrollTo(0,from+(to-from)*ease(k));if(k<1)anim=requestAnimationFrame(step);else anim=null;})(performance.now());
+    }
+    function zone(dir){var y=window.pageYOffset||0,e=endY();if(dir>0&&y<e-4)return e;if(dir<0&&y>2&&y<=e+4)return 0;return null;}
+    function intent(dir,ev){if(document.documentElement.classList.contains('tld-loading'))return;
+      if(Date.now()<lock){if(zone(dir)!==null||anim){ev&&ev.cancelable&&ev.preventDefault();}return;}
+      var to=zone(dir);if(to===null)return;ev&&ev.cancelable&&ev.preventDefault();go(to);}
+    window.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)<2||e.ctrlKey)return;intent(e.deltaY>0?1:-1,e);},{passive:false});
+    var ty=null;
+    window.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+    window.addEventListener('touchmove',function(e){if(ty===null)return;var d=ty-e.touches[0].clientY;if(Math.abs(d)<12)return;intent(d>0?1:-1,e);if(anim||Date.now()<lock)ty=null;},{passive:false});
+    window.addEventListener('keydown',function(e){var k=e.key,dir=(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))?1:(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))?-1:0;
+      if(!dir||/input|textarea|select/i.test((e.target&&e.target.tagName)||''))return;intent(dir,e);});
+  }
 })();
 
-/* --- src/home/hover-video.js --- */
-/* The Lazy Dog — catégories dans la phrase d'intro : au survol d'une catégorie, une vidéo apparaît en fond (sans transition).
-   [data-hover-stage] : le bloc qui reçoit la vidéo ; data-video = vidéo par défaut.
-   [data-hover-cat] : chaque catégorie survolable ; data-video facultatif pour une vidéo propre à la catégorie.
-   Sans survol, seule la phrase est visible. Classes posées : .is-hover sur le bloc, .is-on sur la catégorie survolée. */
+/* --- src/home/build-section.js --- */
+/* The Lazy Dog — section « fond qui se construit » (section jaune de la page d'accueil).
+   [data-build] : quand la section arrive à l'écran, son fond [data-build-bg] se construit de bas en haut,
+   puis le texte [data-words][data-words-wait] s'écrit mot par mot.
+   Au survol d'une catégorie [data-hover-cat] (attribut data-image = image de la catégorie), le fond devient cette image,
+   sans transition ; sans survol, seul le fond de couleur et la phrase restent. Classes : .is-hover / .is-on. */
 (function(){
-  [].forEach.call(document.querySelectorAll('[data-hover-stage]'),function(stage){
-    var cats=[].slice.call(stage.querySelectorAll('[data-hover-cat]'));if(!cats.length)return;
-    var def=stage.getAttribute('data-video')||'';
-    var v=document.createElement('video');v.className='tld-hover-video';v.muted=true;v.loop=true;v.playsInline=true;v.preload='none';
-    v.setAttribute('aria-hidden','true');v.setAttribute('muted','');v.setAttribute('playsinline','');
-    stage.insertBefore(v,stage.firstChild);
-    var active=null,warm=false;
-    function warmUp(){if(warm)return;warm=true;var s=def||(cats[0]&&cats[0].getAttribute('data-video'));if(s&&!v.src){v.src=s;v.preload='auto';}}
-    /* on précharge la vidéo quand la section approche de l'écran */
-    if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){warmUp();io.disconnect();}},{rootMargin:'400px 0px'});io.observe(stage);}else warmUp();
-    function on(cat){
-      warmUp();if(active)active.classList.remove('is-on');active=cat;cat.classList.add('is-on');stage.classList.add('is-hover');
-      var s=cat.getAttribute('data-video')||def;if(s&&v.getAttribute('src')!==s)v.src=s;
-      var p=v.play();if(p&&p.catch)p.catch(function(){});
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  [].forEach.call(document.querySelectorAll('[data-build]'),function(sec){
+    var bg=sec.querySelector('[data-build-bg]'),words=sec.querySelector('[data-words-wait]');
+    var D=parseFloat(sec.getAttribute('data-build-duration'))||900;
+    function go(){
+      if(sec._built)return;sec._built=true;
+      if(bg&&!reduce){bg.style.transition='transform '+D+'ms cubic-bezier(.77,0,.18,1)';bg.style.transform='scaleY(1)';}
+      setTimeout(function(){if(words)words.dispatchEvent(new CustomEvent('tld:words'));},reduce?0:D*.85);
     }
-    function off(cat){if(active!==cat)return;cat.classList.remove('is-on');active=null;stage.classList.remove('is-hover');v.pause();}
+    if(bg&&!reduce){bg.style.transformOrigin='50% 100%';bg.style.transform='scaleY(0)';}
+    if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){go();io.disconnect();}},{threshold:.35});io.observe(sec);}else go();
+    /* images au survol des catégories */
+    var cats=[].slice.call(sec.querySelectorAll('[data-hover-cat]'));if(!cats.length)return;
+    var layer=document.createElement('div');layer.className='tld-hover-media';layer.setAttribute('aria-hidden','true');
+    sec.insertBefore(layer,bg?bg.nextSibling:sec.firstChild);
+    var imgs={},active=null;
+    cats.forEach(function(cat){var u=cat.getAttribute('data-image');if(!u||imgs[u])return;
+      var im=document.createElement('img');im.alt='';im.decoding='async';im.loading='lazy';im.src=u;layer.appendChild(im);imgs[u]=im;});
+    function on(cat){if(active)active.classList.remove('is-on');active=cat;cat.classList.add('is-on');sec.classList.add('is-hover');
+      var u=cat.getAttribute('data-image');for(var k in imgs)imgs[k].classList.toggle('is-on',k===u);}
+    function off(cat){if(active!==cat)return;cat.classList.remove('is-on');active=null;sec.classList.remove('is-hover');for(var k in imgs)imgs[k].classList.remove('is-on');}
     cats.forEach(function(cat){
-      cat.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'||e.pointerType==='pen')on(cat);});
-      cat.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'||e.pointerType==='pen')off(cat);});
+      cat.addEventListener('pointerenter',function(e){if(e.pointerType!=='touch')on(cat);});
+      cat.addEventListener('pointerleave',function(e){if(e.pointerType!=='touch')off(cat);});
       cat.addEventListener('focus',function(){on(cat);});cat.addEventListener('blur',function(){off(cat);});
     });
   });
+})();
+
+/* --- src/home/projects.js --- */
+/* The Lazy Dog — projets qui défilent au scroll.
+   [data-projects] : la section ; [data-projects-pin] : le bloc épinglé à l'écran ; [data-col] : les colonnes du fond (4) ;
+   les projets sont les éléments .w-dyn-item (ou [data-project]) de la section. En scrollant, la colonne du projet en cours
+   se remplit de bas en haut ; quand elle est pleine, on passe au projet suivant (et à la colonne suivante).
+   data-projects-step (défaut 0.8) = scroll par projet, en hauteur d'écran. Classe .is-active sur le projet affiché. */
+(function(){
+  var sec=document.querySelector('[data-projects]');if(!sec)return;
+  var pin=sec.querySelector('[data-projects-pin]'),items=[].slice.call(sec.querySelectorAll('[data-project],.w-dyn-item'));
+  var cols=[].slice.call(sec.querySelectorAll('[data-col]')).map(function(c){return c.firstElementChild||c;});
+  if(!pin||!items.length)return;
+  var n=items.length,C=cols.length||1,STEP=parseFloat(sec.getAttribute('data-projects-step'))||.8,cur=-1,ticking=false;
+  cols.forEach(function(f){f.style.transformOrigin='50% 100%';f.style.transform='scaleY(0)';f.style.willChange='transform';});
+  function layout(){var vh=window.innerHeight;sec.style.height=(vh+n*STEP*vh)+'px';pin.style.position='sticky';pin.style.top='0px';pin.style.height=vh+'px';update();}
+  function set(i){if(i===cur)return;cur=i;items.forEach(function(it,j){it.classList.toggle('is-active',j===i);it.setAttribute('aria-hidden',j===i?'false':'true');});}
+  function update(){
+    ticking=false;
+    var r=sec.getBoundingClientRect(),vh=window.innerHeight,len=Math.max(1,r.height-vh);
+    var t=Math.max(0,Math.min(.99999,-r.top/len)),x=t*n,i=Math.floor(x),local=x-i;
+    set(i);
+    var c=i%C; /* colonnes du « tour » en cours : pleines avant, en cours, vides après */
+    cols.forEach(function(f,j){var v=j<c?1:j===c?local:0;f.style.transform='scaleY('+v.toFixed(4)+')';});
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
+  window.addEventListener('scroll',req,{passive:true});
+  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(layout,120);});
+  window.addEventListener('load',layout);layout();
 })();

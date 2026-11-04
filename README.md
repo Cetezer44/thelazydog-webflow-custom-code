@@ -11,9 +11,10 @@ Code JavaScript du site Webflow **The Lazy Dog**, servi par [jsDelivr](https://w
 | `src/home/eye.js` | Logo œil du header : l'image du sprite change selon la position du curseur | Page d'accueil |
 | `src/home/showreel.js` | Showreel en boucle, curseur play/pause au survol, clic = lecture/pause | Page d'accueil |
 | `src/home/words.js` | Texte qui s'écrit mot par mot quand il entre dans l'écran (`[data-words]`) | Page d'accueil |
-| `src/home/reveal.js` | Apparition des visuels projets par un masque de haut en bas (`.tld-work__media` ou `[data-reveal]`), puis du titre | Page d'accueil |
+| `src/home/reveal.js` | Apparition par un masque de haut en bas (`[data-reveal]`) | Page d'accueil |
 | `src/home/reel-grow.js` | Showreel carré au départ qui grandit au scroll jusqu'à 70 % de la largeur en 16:9 (`[data-grow]`) | Page d'accueil |
-| `src/home/hover-video.js` | Catégories dans la phrase d'intro : au survol, une vidéo apparaît en fond (`[data-hover-stage]`, `[data-hover-cat]`) | Page d'accueil |
+| `src/home/build-section.js` | Section jaune : le fond se construit de bas en haut puis le texte s'écrit ; au survol d'une catégorie, le fond devient l'image de la catégorie (`[data-build]`, `[data-hover-cat][data-image]`) | Page d'accueil |
+| `src/home/projects.js` | Projets épinglés : fond en 4 colonnes qui se remplissent au scroll, le projet change quand la colonne est pleine (`[data-projects]`) | Page d'accueil |
 | `src/home/parallax.js` | Parallax au scroll : image dans son cadre (`[data-parallax]`) et décalage des cartes projets (`[data-speeds]`, `[data-speed]`) | Page d'accueil |
 | `src/global/cursor.js` | Curseur étoile (normal / survol / clic) en mode difference | Toutes les pages |
 | `webflow/*.html` | Copies de référence des embeds qui restent dans Webflow (CSS + balisage du loader et du showreel) | — |
@@ -53,5 +54,7 @@ Les liens actuels pointent sur le hash d'un commit : la version servie ne change
 - Texte mot par mot : `data-words` sur un paragraphe (le gras `<strong>` est conservé) ; `data-words-delay` (ms entre deux mots, 55) et `data-words-duration` (ms par mot, 500) en option.
 - Parallax : `data-parallax="0.12"` sur un cadre `overflow: hidden` contenant une image (amplitude en fraction de la hauteur) ; `data-speeds="0,0.08,0,0.14,0.05"` sur une liste (une vitesse par enfant, en fraction de la hauteur d'écran) ou `data-speed` sur un élément. Désactivé sur mobile et si « réduire les animations ».
 - Showreel qui grandit : `data-grow` sur `.tld-reel`, réglages `data-grow-from` (350), `data-grow-to` (0.7) et `data-grow-ratio` (16/9).
-- Vidéo au survol : `data-hover-stage` + `data-video` (vidéo par défaut) sur le bloc ; `data-hover-cat` (+ `data-video` facultatif) sur chaque catégorie.
+- Ancre vers le showreel : `data-grow-snap` sur `.tld-reel` (un geste de scroll depuis le premier écran amène au showreel en grand, et inversement).
+- Section jaune : `data-build` (section), `data-build-bg` (fond), `data-words-wait` sur le texte, `data-hover-cat` + `data-image` sur chaque catégorie.
+- Projets : `data-projects` (+ `data-projects-step`, 0.8 écran par projet), `data-projects-pin`, `data-col` (colonnes, avec un enfant de remplissage).
 - Curseur : tout élément avec `data-cursor="hover"` déclenche l'état survol.

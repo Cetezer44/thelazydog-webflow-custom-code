@@ -1,8 +1,8 @@
 /* The Lazy Dog — apparition des projets par un masque de haut en bas.
-   Chaque visuel .tld-work__media (ou tout élément [data-reveal]) se dévoile du haut vers le bas quand il entre dans l'écran ;
+   Tout élément [data-reveal] se dévoile du haut vers le bas quand il entre dans l'écran ;
    le titre du projet (.tld-work__title) apparaît juste après. Réglage facultatif : data-reveal-duration (ms, défaut 1100). */
 (function(){
-  var els=[].slice.call(document.querySelectorAll('.tld-work__media,[data-reveal]'));if(!els.length)return;
+  var els=[].slice.call(document.querySelectorAll('[data-reveal]'));if(!els.length)return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
   var EASE='cubic-bezier(.77,0,.18,1)';
   els.forEach(function(el){

@@ -1,6 +1,7 @@
 /* The Lazy Dog — texte qui s'écrit mot par mot.
    Tout élément [data-words] : quand il entre dans l'écran, ses mots apparaissent un par un, à leur rythme
    (indépendamment de la vitesse du scroll). Le gras, les liens, etc. sont conservés.
+   data-words-wait : n'écrit le texte qu'à la réception de l'évènement « tld:words » sur l'élément (déclenché par un autre script).
    Réglages facultatifs : data-words-delay (ms entre deux mots, défaut 55), data-words-duration (ms par mot, défaut 500). */
 (function(){
   var els=[].slice.call(document.querySelectorAll('[data-words]'));if(!els.length)return;
@@ -27,6 +28,8 @@
     var step=parseFloat(el.getAttribute('data-words-delay'))||55;
     el._words.forEach(function(w,i){w.style.transitionDelay=(i*step)+'ms';w.style.opacity=1;w.style.transform='none';});
   }
+  els.forEach(function(el){el.addEventListener('tld:words',function(){play(el);});});
+  els=els.filter(function(el){return !el.hasAttribute('data-words-wait');});
   if(!('IntersectionObserver' in window)){els.forEach(play);return;}
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){play(e.target);io.unobserve(e.target);}});},{rootMargin:'0px 0px -15% 0px',threshold:.15});
   els.forEach(function(el){io.observe(el);});
