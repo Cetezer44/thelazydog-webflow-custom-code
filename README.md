@@ -55,7 +55,7 @@ Les liens actuels pointent sur le hash d'un commit : la version servie ne change
 - Parallax : `data-parallax="0.12"` sur un cadre `overflow: hidden` contenant une image (amplitude en fraction de la hauteur) ; `data-speeds="0,0.08,0,0.14,0.05"` sur une liste (une vitesse par enfant, en fraction de la hauteur d'écran) ou `data-speed` sur un élément. Désactivé sur mobile et si « réduire les animations ».
 - Showreel qui grandit : `data-grow` sur `.tld-reel`, réglages `data-grow-from` (350), `data-grow-to` (0.7) et `data-grow-ratio` (16/9).
 - Showreel plein écran : `data-grow-fill` sur `.tld-reel` (la section prend toute la hauteur de l'écran).
-- Ancre vers le showreel : `data-grow-snap` sur `.tld-reel` (un geste de scroll depuis le premier écran amène au showreel en grand, et inversement).
+- Ancres douces : `data-grow-snap` sur `.tld-reel` (premier écran -> showreel en grand -> chaque section `data-snap`, et retour ; durée `data-grow-snap-duration`, 1700 ms).
 - Section jaune : `data-build` (section), `data-build-bg` (fond), `data-words-wait` sur le texte, `data-hover-cat` + `data-image` sur chaque catégorie.
 - Projets : `data-projects` (+ `data-projects-step`, 0.8 écran par projet), `data-projects-pin`, `data-col` (colonnes, avec un enfant de remplissage).
 - Curseur : tout élément avec `data-cursor="hover"` déclenche l'état survol.

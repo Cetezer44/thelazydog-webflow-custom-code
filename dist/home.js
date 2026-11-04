@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v2.0.1 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v2.1.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
@@ -404,8 +404,9 @@
    La place finale est réservée dès le départ : le reste de la page ne bouge pas pendant l'animation.
    data-grow-fill : la section du showreel prend toute la hauteur de l'écran (showreel centré, la section suivante
    commence au bas de l'écran une fois arrivé).
-   data-grow-snap : depuis le premier écran, un geste de scroll vers le bas emmène directement au showreel en grand
-   (et vers le haut, ramène tout en haut). */
+   data-grow-snap : un geste de scroll emmène en douceur d'une ancre à l'autre : premier écran -> showreel en grand ->
+   chaque section [data-snap] (et inversement). Plus bas que la dernière ancre, le scroll est normal.
+   data-grow-snap-duration : durée du trajet en ms (défaut 1700). */
 (function(){
   var reel=document.querySelector('[data-grow]');if(!reel)return;
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -435,19 +436,26 @@
   window.addEventListener('scroll',req,{passive:true});
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(init,120);});
   window.addEventListener('load',init);
-  /* ancre : premier écran <-> showreel */
+  /* ancres douces : premier écran -> showreel en grand -> sections [data-snap] (ex. la section jaune), et retour */
   if(reel.hasAttribute('data-grow-snap')&&!reduce){
-    var anim=null,lock=0;
+    var anim=null,lock=0,DUR=parseFloat(reel.getAttribute('data-grow-snap-duration'))||1700;
+    function soft(k){return -(Math.cos(Math.PI*k)-1)/2;} /* easeInOutSine : départ et arrivée très doux */
+    function docTop(el){var y=0;while(el){y+=el.offsetTop;el=el.offsetParent;}return y;}
+    function points(){var pts=[0,endY()];[].forEach.call(document.querySelectorAll('[data-snap]'),function(el){pts.push(docTop(el));});
+      return pts.sort(function(a,b){return a-b;});}
     function go(to){
-      var from=window.pageYOffset||0,t0=null,D=Math.min(1300,Math.max(700,Math.abs(to-from)*1.3));
-      if(anim)cancelAnimationFrame(anim);lock=Date.now()+D+250;
+      var from=window.pageYOffset||0,t0=null,D=DUR*Math.min(1,Math.max(.6,Math.abs(to-from)/window.innerHeight));
+      if(anim)cancelAnimationFrame(anim);lock=Date.now()+D+400;
       document.documentElement.style.scrollBehavior='auto';
-      (function step(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D);window.scrollTo(0,from+(to-from)*ease(k));if(k<1)anim=requestAnimationFrame(step);else anim=null;})(performance.now());
+      anim=requestAnimationFrame(function step(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D);window.scrollTo(0,Math.round(from+(to-from)*soft(k)));anim=k<1?requestAnimationFrame(step):null;});
     }
-    function zone(dir){var y=window.pageYOffset||0,e=endY();if(dir>0&&y<e-4)return e;if(dir<0&&y>2&&y<=e+4)return 0;return null;}
+    function target(dir){var y=window.pageYOffset||0,pts=points(),last=pts[pts.length-1];
+      if(y>last+4)return null; /* plus bas que la dernière ancre : scroll normal */
+      if(dir>0){for(var i=0;i<pts.length;i++)if(pts[i]>y+4)return pts[i];return null;}
+      for(var j=pts.length-1;j>=0;j--)if(pts[j]<y-4)return pts[j];return null;}
     function intent(dir,ev){if(document.documentElement.classList.contains('tld-loading'))return;
-      if(Date.now()<lock){if(zone(dir)!==null||anim){ev&&ev.cancelable&&ev.preventDefault();}return;}
-      var to=zone(dir);if(to===null)return;ev&&ev.cancelable&&ev.preventDefault();go(to);}
+      if(anim||Date.now()<lock){var yy=window.pageYOffset||0,pts=points();if(yy<=pts[pts.length-1]+4&&ev&&ev.cancelable)ev.preventDefault();return;}
+      var to=target(dir);if(to===null)return;if(ev&&ev.cancelable)ev.preventDefault();go(to);}
     window.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)<2||e.ctrlKey)return;intent(e.deltaY>0?1:-1,e);},{passive:false});
     var ty=null;
     window.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
