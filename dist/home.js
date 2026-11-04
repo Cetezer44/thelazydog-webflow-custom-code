@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v2.1.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v2.2.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
@@ -443,22 +443,28 @@
     function docTop(el){var y=0;while(el){y+=el.offsetTop;el=el.offsetParent;}return y;}
     function points(){var pts=[0,endY()];[].forEach.call(document.querySelectorAll('[data-snap]'),function(el){pts.push(docTop(el));});
       return pts.sort(function(a,b){return a-b;});}
+    var fresh=true,lastW=0; /* après un trajet, on attend un nouveau geste : l'inertie du trackpad est ignorée */
     function go(to){
       var from=window.pageYOffset||0,t0=null,D=DUR*Math.min(1,Math.max(.6,Math.abs(to-from)/window.innerHeight));
-      if(anim)cancelAnimationFrame(anim);lock=Date.now()+D+400;
+      if(anim)cancelAnimationFrame(anim);lock=Date.now()+D;fresh=false;
       document.documentElement.style.scrollBehavior='auto';
-      anim=requestAnimationFrame(function step(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D);window.scrollTo(0,Math.round(from+(to-from)*soft(k)));anim=k<1?requestAnimationFrame(step):null;});
+      anim=requestAnimationFrame(function step(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D);
+        window.scrollTo(0,from+(to-from)*soft(k));update(); /* le showreel suit le scroll à la même image */
+        if(k<1)anim=requestAnimationFrame(step);else{anim=null;window.scrollTo(0,to);update();}});
     }
     function target(dir){var y=window.pageYOffset||0,pts=points(),last=pts[pts.length-1];
       if(y>last+4)return null; /* plus bas que la dernière ancre : scroll normal */
       if(dir>0){for(var i=0;i<pts.length;i++)if(pts[i]>y+4)return pts[i];return null;}
       for(var j=pts.length-1;j>=0;j--)if(pts[j]<y-4)return pts[j];return null;}
-    function intent(dir,ev){if(document.documentElement.classList.contains('tld-loading'))return;
-      if(anim||Date.now()<lock){var yy=window.pageYOffset||0,pts=points();if(yy<=pts[pts.length-1]+4&&ev&&ev.cancelable)ev.preventDefault();return;}
+    function inZone(){var pts=points();return (window.pageYOffset||0)<=pts[pts.length-1]+4;}
+    function intent(dir,ev,isWheel){if(document.documentElement.classList.contains('tld-loading'))return;
+      var now=Date.now(),gap=now-lastW;if(isWheel)lastW=now;
+      if(anim||now<lock){if(inZone()&&ev&&ev.cancelable)ev.preventDefault();return;}
+      if(isWheel&&!fresh){if(gap<220){if(inZone()&&ev&&ev.cancelable)ev.preventDefault();return;}fresh=true;}
       var to=target(dir);if(to===null)return;if(ev&&ev.cancelable)ev.preventDefault();go(to);}
-    window.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)<2||e.ctrlKey)return;intent(e.deltaY>0?1:-1,e);},{passive:false});
+    window.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)<2||e.ctrlKey)return;intent(e.deltaY>0?1:-1,e,true);},{passive:false});
     var ty=null;
-    window.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+    window.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;fresh=true;},{passive:true});
     window.addEventListener('touchmove',function(e){if(ty===null)return;var d=ty-e.touches[0].clientY;if(Math.abs(d)<12)return;intent(d>0?1:-1,e);if(anim||Date.now()<lock)ty=null;},{passive:false});
     window.addEventListener('keydown',function(e){var k=e.key,dir=(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))?1:(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))?-1:0;
       if(!dir||/input|textarea|select/i.test((e.target&&e.target.tagName)||''))return;intent(dir,e);});

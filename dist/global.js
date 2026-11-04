@@ -1,4 +1,4 @@
-/*! The Lazy Dog — global.js v2.1.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — global.js v2.2.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/global/cursor.js --- */
 /* The Lazy Dog — curseur personnalisé (étoile), en mode difference : normal / survol (étoile agrandie) / clic (étoile + rayons). Désactivé sur écrans tactiles. */
 (function(){

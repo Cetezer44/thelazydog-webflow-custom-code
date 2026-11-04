@@ -1,6 +1,6 @@
 {
   "name": "thelazydog-webflow-custom-code",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "description": "Custom code du site Webflow The Lazy Dog (loader, œil, showreel, stickers, curseur), servi via jsDelivr.",
   "scripts": {
