@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v1.8.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v1.9.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
@@ -397,12 +397,12 @@
 /* --- src/home/reel-grow.js --- */
 /* The Lazy Dog — showreel qui grandit au scroll.
    Au départ le showreel est carré (data-grow-from, défaut 350 px) ; en scrollant il s'élargit jusqu'à data-grow-to
-   (défaut 0.8 = 80 % de la largeur de l'écran) en prenant le format 16:9 (data-grow-ratio, défaut 16/9).
+   (défaut 0.7 = 70 % de la largeur de l'écran) en prenant le format 16:9 (data-grow-ratio, défaut 16/9).
    La place finale est réservée dès le départ : le reste de la page ne bouge pas pendant l'animation. */
 (function(){
   var reel=document.querySelector('[data-grow]');if(!reel)return;
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var FROM=parseFloat(reel.getAttribute('data-grow-from'))||350,TO=parseFloat(reel.getAttribute('data-grow-to'))||.8;
+  var FROM=parseFloat(reel.getAttribute('data-grow-from'))||350,TO=parseFloat(reel.getAttribute('data-grow-to'))||.7;
   var RATIO=(function(r){if(!r)return 16/9;var m=r.split('/');return m.length===2?parseFloat(m[0])/parseFloat(m[1]):parseFloat(r)||16/9;})(reel.getAttribute('data-grow-ratio'));
   var top0=0,vw=0,vh=0,box=0,w0,w1,h1,ticking=false;
   function ease(p){return p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;}
@@ -428,43 +428,32 @@
   window.addEventListener('load',init);
 })();
 
-/* --- src/home/categories.js --- */
-/* The Lazy Dog — section catégories (Publicité, Film de marque…) épinglée au scroll.
-   [data-cats] : la section ; [data-cats-pin] : le bloc qui reste fixé à l'écran ; [data-cat] : chaque ligne de catégorie ;
-   [data-cat-panel] : le paragraphe de chaque catégorie (même ordre) ; [data-cat-bar] : le rectangle de couleur (avec un enfant de remplissage).
-   En scrollant, le rectangle se construit de gauche à droite sur la catégorie active, puis passe à la suivante ;
-   le paragraphe correspondant s'affiche. data-cats-step (défaut 0.6) = scroll par catégorie, en hauteur d'écran. */
+/* --- src/home/hover-video.js --- */
+/* The Lazy Dog — catégories dans la phrase d'intro : au survol d'une catégorie, une vidéo apparaît en fond (sans transition).
+   [data-hover-stage] : le bloc qui reçoit la vidéo ; data-video = vidéo par défaut.
+   [data-hover-cat] : chaque catégorie survolable ; data-video facultatif pour une vidéo propre à la catégorie.
+   Sans survol, seule la phrase est visible. Classes posées : .is-hover sur le bloc, .is-on sur la catégorie survolée. */
 (function(){
-  var sec=document.querySelector('[data-cats]');if(!sec)return;
-  var pin=sec.querySelector('[data-cats-pin]'),rows=[].slice.call(sec.querySelectorAll('[data-cat]')),panels=[].slice.call(sec.querySelectorAll('[data-cat-panel]'));
-  var bar=sec.querySelector('[data-cat-bar]'),fill=bar&&bar.firstElementChild,wrap=panels.length&&panels[0].parentNode;
-  if(!pin||!rows.length)return;
-  var n=rows.length,STEP=parseFloat(sec.getAttribute('data-cats-step'))||.6,reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var cur=-1,ticking=false,stacked=false;
-  if(fill){fill.style.transformOrigin='0 50%';fill.style.willChange='transform';}
-  function layout(){
-    var vh=window.innerHeight;
-    sec.style.height=(vh+n*STEP*vh)+'px';pin.style.position='sticky';pin.style.top='0px';pin.style.height=vh+'px';
-    stacked=window.innerWidth<768;
-    if(wrap){var mh=0;panels.forEach(function(p){mh=Math.max(mh,p.offsetHeight);});wrap.style.minHeight=mh+'px';}
-    cur=-1;update();
-  }
-  function set(i){
-    if(i===cur)return;cur=i;
-    rows.forEach(function(r,j){r.classList.toggle('is-active',j===i);});
-    panels.forEach(function(p,j){p.classList.toggle('is-active',j===i);p.setAttribute('aria-hidden',j===i?'false':'true');});
-    var r=rows[i];
-    if(bar){bar.style.transform='translateY('+r.offsetTop+'px)';bar.style.height=r.offsetHeight+'px';}
-    if(wrap)wrap.style.transform=stacked?'':'translateY('+(r.offsetTop+4)+'px)';
-  }
-  function update(){
-    ticking=false;
-    var r=sec.getBoundingClientRect(),vh=window.innerHeight,len=Math.max(1,r.height-vh);
-    var t=Math.max(0,Math.min(.99999,-r.top/len)),x=t*n,i=Math.floor(x),local=reduce?1:x-i;
-    set(i);if(fill)fill.style.transform='scaleX('+Math.min(1,local*1.15).toFixed(4)+')';
-  }
-  function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
-  window.addEventListener('scroll',req,{passive:true});
-  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(layout,120);});
-  window.addEventListener('load',layout);layout();
+  [].forEach.call(document.querySelectorAll('[data-hover-stage]'),function(stage){
+    var cats=[].slice.call(stage.querySelectorAll('[data-hover-cat]'));if(!cats.length)return;
+    var def=stage.getAttribute('data-video')||'';
+    var v=document.createElement('video');v.className='tld-hover-video';v.muted=true;v.loop=true;v.playsInline=true;v.preload='none';
+    v.setAttribute('aria-hidden','true');v.setAttribute('muted','');v.setAttribute('playsinline','');
+    stage.insertBefore(v,stage.firstChild);
+    var active=null,warm=false;
+    function warmUp(){if(warm)return;warm=true;var s=def||(cats[0]&&cats[0].getAttribute('data-video'));if(s&&!v.src){v.src=s;v.preload='auto';}}
+    /* on précharge la vidéo quand la section approche de l'écran */
+    if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){warmUp();io.disconnect();}},{rootMargin:'400px 0px'});io.observe(stage);}else warmUp();
+    function on(cat){
+      warmUp();if(active)active.classList.remove('is-on');active=cat;cat.classList.add('is-on');stage.classList.add('is-hover');
+      var s=cat.getAttribute('data-video')||def;if(s&&v.getAttribute('src')!==s)v.src=s;
+      var p=v.play();if(p&&p.catch)p.catch(function(){});
+    }
+    function off(cat){if(active!==cat)return;cat.classList.remove('is-on');active=null;stage.classList.remove('is-hover');v.pause();}
+    cats.forEach(function(cat){
+      cat.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'||e.pointerType==='pen')on(cat);});
+      cat.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'||e.pointerType==='pen')off(cat);});
+      cat.addEventListener('focus',function(){on(cat);});cat.addEventListener('blur',function(){off(cat);});
+    });
+  });
 })();

@@ -1,11 +1,11 @@
 /* The Lazy Dog — showreel qui grandit au scroll.
    Au départ le showreel est carré (data-grow-from, défaut 350 px) ; en scrollant il s'élargit jusqu'à data-grow-to
-   (défaut 0.8 = 80 % de la largeur de l'écran) en prenant le format 16:9 (data-grow-ratio, défaut 16/9).
+   (défaut 0.7 = 70 % de la largeur de l'écran) en prenant le format 16:9 (data-grow-ratio, défaut 16/9).
    La place finale est réservée dès le départ : le reste de la page ne bouge pas pendant l'animation. */
 (function(){
   var reel=document.querySelector('[data-grow]');if(!reel)return;
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var FROM=parseFloat(reel.getAttribute('data-grow-from'))||350,TO=parseFloat(reel.getAttribute('data-grow-to'))||.8;
+  var FROM=parseFloat(reel.getAttribute('data-grow-from'))||350,TO=parseFloat(reel.getAttribute('data-grow-to'))||.7;
   var RATIO=(function(r){if(!r)return 16/9;var m=r.split('/');return m.length===2?parseFloat(m[0])/parseFloat(m[1]):parseFloat(r)||16/9;})(reel.getAttribute('data-grow-ratio'));
   var top0=0,vw=0,vh=0,box=0,w0,w1,h1,ticking=false;
   function ease(p){return p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;}
