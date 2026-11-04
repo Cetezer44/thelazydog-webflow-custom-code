@@ -2,6 +2,8 @@
    Au départ le showreel est carré (data-grow-from, défaut 350 px) ; en scrollant il s'élargit jusqu'à data-grow-to
    (défaut 0.7 = 70 % de la largeur de l'écran) en prenant le format 16:9 (data-grow-ratio, défaut 16/9).
    La place finale est réservée dès le départ : le reste de la page ne bouge pas pendant l'animation.
+   data-grow-fill : la section du showreel prend toute la hauteur de l'écran (showreel centré, la section suivante
+   commence au bas de l'écran une fois arrivé).
    data-grow-snap : depuis le premier écran, un geste de scroll vers le bas emmène directement au showreel en grand
    (et vers le haut, ramène tout en haut). */
 (function(){
@@ -24,7 +26,8 @@
     var end=Math.max(1,top0-(vh-h1)/2),p=reduce?1:Math.max(0,Math.min(1,(window.pageYOffset||0)/end)),e=ease(p);
     var w=w0+(w1-w0)*e,h=w0+(h1-w0)*e;
     reel.style.width=w.toFixed(1)+'px';reel.style.height=h.toFixed(1)+'px';
-    reel.style.marginBottom=(h1-h).toFixed(1)+'px'; /* garde la hauteur finale réservée */
+    var extra=reel.hasAttribute('data-grow-fill')?Math.max(0,(vh-h1)/2):0;
+    reel.style.marginBottom=(h1-h+extra).toFixed(1)+'px'; /* garde la hauteur finale réservée (+ bas de l'écran si data-grow-fill) */
   }
   function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
   function init(){measure();update();}
