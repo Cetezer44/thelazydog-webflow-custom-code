@@ -14,6 +14,7 @@ Code JavaScript du site Webflow **The Lazy Dog**, servi par [jsDelivr](https://w
 | `src/home/reveal.js` | Apparition par un masque de haut en bas (`[data-reveal]`) | Page d'accueil |
 | `src/home/reel-grow.js` | Showreel carré au départ qui grandit au scroll jusqu'à 70 % de la largeur en 16:9 (`[data-grow]`) | Page d'accueil |
 | `src/home/build-section.js` | Section jaune : le fond se construit de bas en haut puis le texte s'écrit ; au survol d'une catégorie, le fond devient l'image de la catégorie (`[data-build]`, `[data-hover-cat][data-image]`) | Page d'accueil |
+| `src/home/snap.js` | Ancres de scroll douces entre les sections `[data-snap]` (premier écran -> projets -> section jaune) | Page d'accueil |
 | `src/home/projects.js` | Projets épinglés : fond en 4 colonnes qui se remplissent au scroll, le projet change quand la colonne est pleine (`[data-projects]`) | Page d'accueil |
 | `src/home/parallax.js` | Parallax au scroll : image dans son cadre (`[data-parallax]`) et décalage des cartes projets (`[data-speeds]`, `[data-speed]`) | Page d'accueil |
 | `src/global/cursor.js` | Curseur étoile (normal / survol / clic) en mode difference | Toutes les pages |
@@ -54,8 +55,7 @@ Les liens actuels pointent sur le hash d'un commit : la version servie ne change
 - Texte mot par mot : `data-words` sur un paragraphe (le gras `<strong>` est conservé) ; `data-words-delay` (ms entre deux mots, 55) et `data-words-duration` (ms par mot, 500) en option.
 - Parallax : `data-parallax="0.12"` sur un cadre `overflow: hidden` contenant une image (amplitude en fraction de la hauteur) ; `data-speeds="0,0.08,0,0.14,0.05"` sur une liste (une vitesse par enfant, en fraction de la hauteur d'écran) ou `data-speed` sur un élément. Désactivé sur mobile et si « réduire les animations ».
 - Showreel qui grandit : `data-grow` sur `.tld-reel`, réglages `data-grow-from` (350), `data-grow-to` (0.7) et `data-grow-ratio` (16/9).
-- Showreel plein écran : `data-grow-fill` sur `.tld-reel` (la section prend toute la hauteur de l'écran).
-- Ancres douces : `data-grow-snap` sur `.tld-reel` (premier écran -> showreel en grand -> chaque section `data-snap`, et retour ; durée `data-grow-snap-duration`, 1700 ms).
+- Ancres douces : `data-snap` sur chaque section d'arrivée ; une section épinglée (projets) se scrolle normalement jusqu'à sa fin. Durée : `data-snap-duration` (1700 ms) sur `<body>`.
 - Section jaune : `data-build` (section), `data-build-bg` (fond), `data-words-wait` sur le texte, `data-hover-cat` + `data-image` sur chaque catégorie.
 - Projets : `data-projects` (+ `data-projects-step`, 0.8 écran par projet), `data-projects-pin`, `data-col` (colonnes, avec un enfant de remplissage).
 - Curseur : tout élément avec `data-cursor="hover"` déclenche l'état survol.

@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home.js v2.2.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v2.3.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
@@ -128,7 +128,7 @@
     wrap.style.height=H+'px';wrap.style.overflow='hidden';
     k=Math.max(.5,Math.min(1,W/1440))*SCALE;
     R=null;
-    if(reel&&reel.offsetParent===hero&&reel.offsetTop<H-8){R={x:reel.offsetLeft,y:reel.offsetTop,w:reel.offsetWidth};}
+    if(reel&&reel.offsetParent===hero&&reel.offsetTop<H-8){R={x:reel.offsetLeft,y:reel.offsetTop,w:reel.offsetWidth,h:Math.min(reel.offsetHeight,H-reel.offsetTop)};}
   }
   function loadImg(img){img.loading='eager';return new Promise(function(res){if(img.complete&&img.naturalWidth)return res();img.addEventListener('load',res,{once:true});img.addEventListener('error',res,{once:true});});}
   function loadMatter(){return new Promise(function(res,rej){if(window.Matter)return res();var s=document.createElement('script');s.src=MATTER;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
@@ -153,7 +153,7 @@
       walls=[Bodies.rectangle(W/2,H+T/2,W+6*T,T,{isStatic:true}),
         Bodies.rectangle(W/2,-3000-T/2,W+6*T,T,{isStatic:true})];
       if(!out)walls.push(Bodies.rectangle(-T/2,H/2-1500,T,H+3000+2*T,{isStatic:true}),Bodies.rectangle(W+T/2,H/2-1500,T,H+3000+2*T,{isStatic:true}));
-      if(R){walls.push(Bodies.rectangle(R.x+R.w/2,(R.y+H)/2,R.w,H-R.y,{isStatic:true,chamfer:{radius:[10,10,0,0]}}));}
+      if(R){walls.push(Bodies.rectangle(R.x+R.w/2,R.y+R.h/2,R.w,R.h,{isStatic:true,chamfer:{radius:5}})); /* le showreel arrête les stickers */}
       Comp.add(engine.world,walls);
     }
     placeWalls();
@@ -404,9 +404,7 @@
    La place finale est réservée dès le départ : le reste de la page ne bouge pas pendant l'animation.
    data-grow-fill : la section du showreel prend toute la hauteur de l'écran (showreel centré, la section suivante
    commence au bas de l'écran une fois arrivé).
-   data-grow-snap : un geste de scroll emmène en douceur d'une ancre à l'autre : premier écran -> showreel en grand ->
-   chaque section [data-snap] (et inversement). Plus bas que la dernière ancre, le scroll est normal.
-   data-grow-snap-duration : durée du trajet en ms (défaut 1700). */
+   (Les ancres de scroll sont gérées par snap.js.) */
 (function(){
   var reel=document.querySelector('[data-grow]');if(!reel)return;
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -436,39 +434,6 @@
   window.addEventListener('scroll',req,{passive:true});
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(init,120);});
   window.addEventListener('load',init);
-  /* ancres douces : premier écran -> showreel en grand -> sections [data-snap] (ex. la section jaune), et retour */
-  if(reel.hasAttribute('data-grow-snap')&&!reduce){
-    var anim=null,lock=0,DUR=parseFloat(reel.getAttribute('data-grow-snap-duration'))||1700;
-    function soft(k){return -(Math.cos(Math.PI*k)-1)/2;} /* easeInOutSine : départ et arrivée très doux */
-    function docTop(el){var y=0;while(el){y+=el.offsetTop;el=el.offsetParent;}return y;}
-    function points(){var pts=[0,endY()];[].forEach.call(document.querySelectorAll('[data-snap]'),function(el){pts.push(docTop(el));});
-      return pts.sort(function(a,b){return a-b;});}
-    var fresh=true,lastW=0; /* après un trajet, on attend un nouveau geste : l'inertie du trackpad est ignorée */
-    function go(to){
-      var from=window.pageYOffset||0,t0=null,D=DUR*Math.min(1,Math.max(.6,Math.abs(to-from)/window.innerHeight));
-      if(anim)cancelAnimationFrame(anim);lock=Date.now()+D;fresh=false;
-      document.documentElement.style.scrollBehavior='auto';
-      anim=requestAnimationFrame(function step(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D);
-        window.scrollTo(0,from+(to-from)*soft(k));update(); /* le showreel suit le scroll à la même image */
-        if(k<1)anim=requestAnimationFrame(step);else{anim=null;window.scrollTo(0,to);update();}});
-    }
-    function target(dir){var y=window.pageYOffset||0,pts=points(),last=pts[pts.length-1];
-      if(y>last+4)return null; /* plus bas que la dernière ancre : scroll normal */
-      if(dir>0){for(var i=0;i<pts.length;i++)if(pts[i]>y+4)return pts[i];return null;}
-      for(var j=pts.length-1;j>=0;j--)if(pts[j]<y-4)return pts[j];return null;}
-    function inZone(){var pts=points();return (window.pageYOffset||0)<=pts[pts.length-1]+4;}
-    function intent(dir,ev,isWheel){if(document.documentElement.classList.contains('tld-loading'))return;
-      var now=Date.now(),gap=now-lastW;if(isWheel)lastW=now;
-      if(anim||now<lock){if(inZone()&&ev&&ev.cancelable)ev.preventDefault();return;}
-      if(isWheel&&!fresh){if(gap<220){if(inZone()&&ev&&ev.cancelable)ev.preventDefault();return;}fresh=true;}
-      var to=target(dir);if(to===null)return;if(ev&&ev.cancelable)ev.preventDefault();go(to);}
-    window.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)<2||e.ctrlKey)return;intent(e.deltaY>0?1:-1,e,true);},{passive:false});
-    var ty=null;
-    window.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;fresh=true;},{passive:true});
-    window.addEventListener('touchmove',function(e){if(ty===null)return;var d=ty-e.touches[0].clientY;if(Math.abs(d)<12)return;intent(d>0?1:-1,e);if(anim||Date.now()<lock)ty=null;},{passive:false});
-    window.addEventListener('keydown',function(e){var k=e.key,dir=(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))?1:(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))?-1:0;
-      if(!dir||/input|textarea|select/i.test((e.target&&e.target.tagName)||''))return;intent(dir,e);});
-  }
 })();
 
 /* --- src/home/build-section.js --- */
@@ -534,4 +499,52 @@
   window.addEventListener('scroll',req,{passive:true});
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(layout,120);});
   window.addEventListener('load',layout);layout();
+})();
+
+/* --- src/home/snap.js --- */
+/* The Lazy Dog — ancres de scroll douces entre les sections.
+   Chaque section [data-snap] est une ancre : depuis la section précédente, un geste de scroll vers le bas emmène en douceur
+   en haut de cette section (et un geste vers le haut ramène à la précédente). Le premier écran (haut de page) est l'ancre de départ.
+   Une section plus haute que l'écran (ex. projets épinglés) se scrolle normalement jusqu'à sa fin, puis l'ancre suivante prend le relais.
+   Réglage sur <body> ou sur la première ancre : data-snap-duration (ms, défaut 1700). L'inertie du trackpad est ignorée. */
+(function(){
+  var secs=[].slice.call(document.querySelectorAll('[data-snap]'));if(!secs.length)return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var root=document.documentElement,DUR=parseFloat(document.body.getAttribute('data-snap-duration')||secs[0].getAttribute('data-snap-duration'))||1700;
+  var anim=null,lock=0,fresh=true,lastW=0;
+  function soft(k){return -(Math.cos(Math.PI*k)-1)/2;} /* easeInOutSine */
+  function docTop(el){var y=0;while(el){y+=el.offsetTop;el=el.offsetParent;}return y;}
+  /* zones de saut : [fin de la section précédente, haut de la section suivante] */
+  function zones(){
+    var vh=window.innerHeight,z=[],prev=0;
+    secs.forEach(function(el){var t=docTop(el);if(t>prev+8)z.push([prev,t]);prev=t+Math.max(0,el.offsetHeight-vh);});
+    return z;
+  }
+  function target(dir){
+    var y=window.pageYOffset||0,z=zones();
+    for(var i=0;i<z.length;i++){var a=z[i][0],b=z[i][1];
+      if(dir>0&&y>=a-4&&y<b-4)return b;
+      if(dir<0&&y>a+4&&y<=b+4)return a;}
+    return null;
+  }
+  function inZone(){var y=window.pageYOffset||0,z=zones();for(var i=0;i<z.length;i++)if(y>=z[i][0]-4&&y<=z[i][1]+4)return true;return false;}
+  function go(to){
+    var from=window.pageYOffset||0,t0=null,D=DUR*Math.min(1,Math.max(.6,Math.abs(to-from)/window.innerHeight));
+    if(anim)cancelAnimationFrame(anim);lock=Date.now()+D;fresh=false;root.style.scrollBehavior='auto';
+    anim=requestAnimationFrame(function step(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D);window.scrollTo(0,from+(to-from)*soft(k));
+      if(k<1)anim=requestAnimationFrame(step);else{anim=null;window.scrollTo(0,to);}});
+  }
+  function intent(dir,ev,isWheel){
+    if(root.classList.contains('tld-loading'))return;
+    var now=Date.now(),gap=now-lastW;if(isWheel)lastW=now;
+    if(anim||now<lock){if(inZone()&&ev&&ev.cancelable)ev.preventDefault();return;}
+    if(isWheel&&!fresh){if(gap<220){if(inZone()&&ev&&ev.cancelable)ev.preventDefault();return;}fresh=true;}
+    var to=target(dir);if(to===null)return;if(ev&&ev.cancelable)ev.preventDefault();go(to);
+  }
+  window.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)<2||e.ctrlKey)return;intent(e.deltaY>0?1:-1,e,true);},{passive:false});
+  var ty=null;
+  window.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;fresh=true;},{passive:true});
+  window.addEventListener('touchmove',function(e){if(ty===null)return;var d=ty-e.touches[0].clientY;if(Math.abs(d)<12)return;intent(d>0?1:-1,e);if(anim||Date.now()<lock)ty=null;},{passive:false});
+  window.addEventListener('keydown',function(e){var k=e.key,dir=(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))?1:(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))?-1:0;
+    if(!dir||/input|textarea|select/i.test((e.target&&e.target.tagName)||''))return;intent(dir,e);});
 })();

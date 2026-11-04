@@ -19,7 +19,7 @@
     wrap.style.height=H+'px';wrap.style.overflow='hidden';
     k=Math.max(.5,Math.min(1,W/1440))*SCALE;
     R=null;
-    if(reel&&reel.offsetParent===hero&&reel.offsetTop<H-8){R={x:reel.offsetLeft,y:reel.offsetTop,w:reel.offsetWidth};}
+    if(reel&&reel.offsetParent===hero&&reel.offsetTop<H-8){R={x:reel.offsetLeft,y:reel.offsetTop,w:reel.offsetWidth,h:Math.min(reel.offsetHeight,H-reel.offsetTop)};}
   }
   function loadImg(img){img.loading='eager';return new Promise(function(res){if(img.complete&&img.naturalWidth)return res();img.addEventListener('load',res,{once:true});img.addEventListener('error',res,{once:true});});}
   function loadMatter(){return new Promise(function(res,rej){if(window.Matter)return res();var s=document.createElement('script');s.src=MATTER;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
@@ -44,7 +44,7 @@
       walls=[Bodies.rectangle(W/2,H+T/2,W+6*T,T,{isStatic:true}),
         Bodies.rectangle(W/2,-3000-T/2,W+6*T,T,{isStatic:true})];
       if(!out)walls.push(Bodies.rectangle(-T/2,H/2-1500,T,H+3000+2*T,{isStatic:true}),Bodies.rectangle(W+T/2,H/2-1500,T,H+3000+2*T,{isStatic:true}));
-      if(R){walls.push(Bodies.rectangle(R.x+R.w/2,(R.y+H)/2,R.w,H-R.y,{isStatic:true,chamfer:{radius:[10,10,0,0]}}));}
+      if(R){walls.push(Bodies.rectangle(R.x+R.w/2,R.y+R.h/2,R.w,R.h,{isStatic:true,chamfer:{radius:5}})); /* le showreel arrête les stickers */}
       Comp.add(engine.world,walls);
     }
     placeWalls();
