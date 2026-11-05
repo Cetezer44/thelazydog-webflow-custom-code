@@ -1,4 +1,5 @@
-/* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
+/* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 00 → 9)
+   Step 00 : les stickers de la page ([data-collect]) s'empilent rapidement au centre, puis disparaissent ;
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
 (function(){
   var root=document.documentElement,loader=document.querySelector('.tld-loader');
@@ -82,19 +83,37 @@
   }
   if(reduce){bg.animate([{opacity:1},{opacity:0}],{duration:300,fill:'forwards'}).onfinish=finish;return;}
   window.scrollTo(0,0);
+  /* Step 00 : pile de stickers (positions relevées sur la frame « Animation home - Step 00 » : [id, x, y, largeur, rotation]) */
+  var PILE=[['1',-0.3,-69.5,211,9.73],['7',-27.4,-6.9,121,-21.04],['6',50.1,-2.8,107,28.01],['3',-37.5,57.5,99,0],['5',58.2,63.7,164,15.99],['4',87.5,33.7,78,30]];
+  var O=0,srcs={};
+  [].forEach.call(document.querySelectorAll('[data-collect]'),function(el){var im=el.tagName==='IMG'?el:el.querySelector('img');if(im)srcs[el.getAttribute('data-collect')]=im.currentSrc||im.src;});
+  var pile=PILE.filter(function(p){return srcs[p[0]];});
+  if(pile.length){
+    O=1350; /* le logo démarre après la pile */
+    pile.forEach(function(p,i){
+      var im=document.createElement('img');im.src=srcs[p[0]];im.alt='';im.className='tld-loader__stk';
+      im.style.cssText='position:absolute;left:0;top:0;width:'+p[3]+'px;height:auto;margin:0;max-width:none;opacity:0;z-index:5;will-change:transform,opacity;pointer-events:none';
+      stage.appendChild(im);
+      var place=function(x,y,r,sc){return 'translate(-50%,-50%) translate('+x+'px,'+y+'px) rotate('+r+'deg) scale('+sc+')';};
+      var t=90+i*95; /* empilement rapide, un sticker toutes les 95 ms */
+      im.animate([{transform:place(p[1]+rnd(-30,30),p[2]-50,p[4]+rnd(-35,35),1.6),opacity:0},{transform:place(p[1],p[2],p[4],1),opacity:1}],{duration:380,delay:t,easing:E.pop,fill:'forwards'});
+      /* puis la pile se ramasse au centre et laisse la place au logo */
+      im.animate([{transform:place(p[1],p[2],p[4],1),opacity:1},{transform:place(p[1]*.2,p[2]*.2,p[4]+rnd(-90,90),.15),opacity:0}],{duration:360,delay:O-330+i*18,easing:E.out,fill:'forwards'});
+    });
+  }
   /* Step 0 : THE */
-  pop(THE,0,120,80);
+  pop(THE,0,120+O,80);
   /* Step 1 : THE monte, LAZY arrive */
-  move(THE,1,780,520,E.move);pop(LAZY,1,860,70);
+  move(THE,1,780+O,520,E.move);pop(LAZY,1,860+O,70);
   /* Step 2 : tout monte, DOG arrive (l'œil tourne sur lui-même) */
-  move(THE.concat(LAZY),2,1480,520,E.move);pop(['d','g'],2,1560,140);
-  set('o',{x:0,y:S[2].o[1]+38,r:-200,s:.2,o:0});to('o',{x:0,y:S[2].o[1],r:0,s:1,o:1},760,1620,E.pop);
+  move(THE.concat(LAZY),2,1480+O,520,E.move);pop(['d','g'],2,1560+O,140);
+  set('o',{x:0,y:S[2].o[1]+38,r:-200,s:.2,o:0});to('o',{x:0,y:S[2].o[1],r:0,s:1,o:1},760,1620+O,E.pop);
   /* Step 3 : les lettres s'écartent */
-  move(ALL,3,2280,700,E.spread,70);
+  move(ALL,3,2280+O,700,E.spread,70);
   /* Step 4 : les lignes se resserrent et s'imbriquent */
-  move(ALL,4,3020,520,E.snap,40);
+  move(ALL,4,3020+O,520,E.snap,40);
   /* Step 5 : les autres lettres s'envolent */
-  var t5=3640;
+  var t5=3640+O;
   ALL.forEach(function(id,i){if(id==='o')return;var p=L[id];
     to(id,{x:p.x*1.35+rnd(-20,20),y:p.y+rnd(40,90),r:p.r+rnd(-70,70),s:.2,o:0},520,t5+i*28,E.out);});
   /* l'œil reste en place : la paupière ovale descend et le ferme (Steps 5 → 7) */

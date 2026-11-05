@@ -1,6 +1,7 @@
-/*! The Lazy Dog — home.js v2.3.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home.js v3.0.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
-/* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 0 → 5)
+/* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 00 → 9)
+   Step 00 : les stickers de la page ([data-collect]) s'empilent rapidement au centre, puis disparaissent ;
    THE → THE LAZY → THE LAZY DOG → lettres écartées → lettres imbriquées → l'œil se ferme (paupière ovale) et se rouvre dans le header (Steps 5 → 9) */
 (function(){
   var root=document.documentElement,loader=document.querySelector('.tld-loader');
@@ -84,19 +85,37 @@
   }
   if(reduce){bg.animate([{opacity:1},{opacity:0}],{duration:300,fill:'forwards'}).onfinish=finish;return;}
   window.scrollTo(0,0);
+  /* Step 00 : pile de stickers (positions relevées sur la frame « Animation home - Step 00 » : [id, x, y, largeur, rotation]) */
+  var PILE=[['1',-0.3,-69.5,211,9.73],['7',-27.4,-6.9,121,-21.04],['6',50.1,-2.8,107,28.01],['3',-37.5,57.5,99,0],['5',58.2,63.7,164,15.99],['4',87.5,33.7,78,30]];
+  var O=0,srcs={};
+  [].forEach.call(document.querySelectorAll('[data-collect]'),function(el){var im=el.tagName==='IMG'?el:el.querySelector('img');if(im)srcs[el.getAttribute('data-collect')]=im.currentSrc||im.src;});
+  var pile=PILE.filter(function(p){return srcs[p[0]];});
+  if(pile.length){
+    O=1350; /* le logo démarre après la pile */
+    pile.forEach(function(p,i){
+      var im=document.createElement('img');im.src=srcs[p[0]];im.alt='';im.className='tld-loader__stk';
+      im.style.cssText='position:absolute;left:0;top:0;width:'+p[3]+'px;height:auto;margin:0;max-width:none;opacity:0;z-index:5;will-change:transform,opacity;pointer-events:none';
+      stage.appendChild(im);
+      var place=function(x,y,r,sc){return 'translate(-50%,-50%) translate('+x+'px,'+y+'px) rotate('+r+'deg) scale('+sc+')';};
+      var t=90+i*95; /* empilement rapide, un sticker toutes les 95 ms */
+      im.animate([{transform:place(p[1]+rnd(-30,30),p[2]-50,p[4]+rnd(-35,35),1.6),opacity:0},{transform:place(p[1],p[2],p[4],1),opacity:1}],{duration:380,delay:t,easing:E.pop,fill:'forwards'});
+      /* puis la pile se ramasse au centre et laisse la place au logo */
+      im.animate([{transform:place(p[1],p[2],p[4],1),opacity:1},{transform:place(p[1]*.2,p[2]*.2,p[4]+rnd(-90,90),.15),opacity:0}],{duration:360,delay:O-330+i*18,easing:E.out,fill:'forwards'});
+    });
+  }
   /* Step 0 : THE */
-  pop(THE,0,120,80);
+  pop(THE,0,120+O,80);
   /* Step 1 : THE monte, LAZY arrive */
-  move(THE,1,780,520,E.move);pop(LAZY,1,860,70);
+  move(THE,1,780+O,520,E.move);pop(LAZY,1,860+O,70);
   /* Step 2 : tout monte, DOG arrive (l'œil tourne sur lui-même) */
-  move(THE.concat(LAZY),2,1480,520,E.move);pop(['d','g'],2,1560,140);
-  set('o',{x:0,y:S[2].o[1]+38,r:-200,s:.2,o:0});to('o',{x:0,y:S[2].o[1],r:0,s:1,o:1},760,1620,E.pop);
+  move(THE.concat(LAZY),2,1480+O,520,E.move);pop(['d','g'],2,1560+O,140);
+  set('o',{x:0,y:S[2].o[1]+38,r:-200,s:.2,o:0});to('o',{x:0,y:S[2].o[1],r:0,s:1,o:1},760,1620+O,E.pop);
   /* Step 3 : les lettres s'écartent */
-  move(ALL,3,2280,700,E.spread,70);
+  move(ALL,3,2280+O,700,E.spread,70);
   /* Step 4 : les lignes se resserrent et s'imbriquent */
-  move(ALL,4,3020,520,E.snap,40);
+  move(ALL,4,3020+O,520,E.snap,40);
   /* Step 5 : les autres lettres s'envolent */
-  var t5=3640;
+  var t5=3640+O;
   ALL.forEach(function(id,i){if(id==='o')return;var p=L[id];
     to(id,{x:p.x*1.35+rnd(-20,20),y:p.y+rnd(40,90),r:p.r+rnd(-70,70),s:.2,o:0},520,t5+i*28,E.out);});
   /* l'œil reste en place : la paupière ovale descend et le ferme (Steps 5 → 7) */
@@ -547,4 +566,100 @@
   window.addEventListener('touchmove',function(e){if(ty===null)return;var d=ty-e.touches[0].clientY;if(Math.abs(d)<12)return;intent(d>0?1:-1,e);if(anim||Date.now()<lock)ty=null;},{passive:false});
   window.addEventListener('keydown',function(e){var k=e.key,dir=(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))?1:(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))?-1:0;
     if(!dir||/input|textarea|select/i.test((e.target&&e.target.tagName)||''))return;intent(dir,e);});
+})();
+
+/* --- src/home/collect.js --- */
+/* The Lazy Dog — stickers à collectionner sur la page d'accueil.
+   [data-collect="id"] : un sticker caché dans la page (affiché en noir et blanc, 30 % d'opacité). Au clic, il reprend sa couleur,
+   grossit un peu (×1,1) et tourne légèrement ; une copie s'envole vers sa place dans la barre [data-collect-bar].
+   [data-collect-slot="id"] : les places de la barre (en bas à gauche de l'écran), dans l'ordre d'affichage.
+   Quand tout est collectionné : écran [data-collect-final] (filtre sombre « glass ») où les stickers [data-final="id"]
+   apparaissent un par un, façon lettres S-K-A-T-E. Un clic ou Échap ferme l'écran.
+   Rotation de départ d'un sticker : variable CSS --r sur l'élément (ex. style="--r:24deg"). */
+(function(){
+  var items=[].slice.call(document.querySelectorAll('[data-collect]'));if(!items.length)return;
+  var bar=document.querySelector('[data-collect-bar]'),fin=document.querySelector('[data-collect-final]');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var got={},total=0,ids={};
+  items.forEach(function(el){var id=el.getAttribute('data-collect');if(!ids[id]){ids[id]=1;total++;}
+    el.setAttribute('role','button');el.tabIndex=0;el.setAttribute('aria-label','Collectionner ce sticker');el.setAttribute('aria-pressed','false');
+    el.addEventListener('click',function(e){e.preventDefault();collect(el);});
+    el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();collect(el);}});
+  });
+  function slot(id){return bar&&bar.querySelector('[data-collect-slot="'+id+'"]');}
+  function imgOf(el){return el.tagName==='IMG'?el:el.querySelector('img');}
+  function collect(el){
+    var id=el.getAttribute('data-collect');if(got[id])return;got[id]=true;
+    el.classList.add('is-collected');el.setAttribute('aria-pressed','true');el.setAttribute('aria-label','Sticker collectionné');
+    var s=slot(id),im=imgOf(el);
+    if(s&&im&&!reduce){ /* une copie s'envole vers la barre */
+      var a=im.getBoundingClientRect(),b=s.getBoundingClientRect(),c=im.cloneNode(false);
+      c.removeAttribute('srcset');c.className='tld-collect-fly';c.style.cssText='position:fixed;left:'+a.left+'px;top:'+a.top+'px;width:'+a.width+'px;height:'+a.height+'px;margin:0;z-index:9990;pointer-events:none;';
+      document.body.appendChild(c);
+      var dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2),sc=Math.min(b.width/a.width,b.height/a.height);
+      var anim=c.animate([{transform:'translate(0,0) scale(1) rotate(0)',opacity:1},{transform:'translate('+dx*.45+'px,'+(dy*.45-80)+'px) scale('+(1+sc)/2+') rotate(-12deg)',opacity:1,offset:.45},{transform:'translate('+dx+'px,'+dy+'px) scale('+sc+') rotate(0)',opacity:1}],{duration:820,easing:'cubic-bezier(.5,0,.2,1)',fill:'forwards'});
+      anim.onfinish=function(){c.remove();fill(s);};
+    }else if(s){fill(s);}
+    if(Object.keys(got).length===total)setTimeout(finale,reduce?200:1100);
+  }
+  function fill(s){s.classList.add('is-got');if(!reduce)s.animate([{transform:'scale(1.45) rotate(-10deg)'},{transform:'scale(.9) rotate(4deg)',offset:.6},{transform:'none'}],{duration:520,easing:'cubic-bezier(.34,1.6,.5,1)'});}
+  function finale(){
+    if(!fin)return;
+    fin.hidden=false;fin.classList.add('is-open');document.documentElement.classList.add('tld-collect-open');
+    var list=[].slice.call(fin.querySelectorAll('[data-final]'));
+    list.forEach(function(el){el.style.opacity=0;});
+    fin.animate([{opacity:0},{opacity:1}],{duration:reduce?1:450,easing:'ease',fill:'forwards'});
+    list.forEach(function(el,i){ /* apparition une par une, avec un « claquement » */
+      var d=reduce?0:550+i*320,r=(i%2?1:-1)*(8+Math.random()*8);
+      el.animate([{opacity:0,transform:'scale(2.6) rotate('+r*2+'deg)'},{opacity:1,transform:'scale(.86) rotate('+(-r*.4)+'deg)',offset:.55},{opacity:1,transform:'scale(1.06) rotate('+(r*.15)+'deg)',offset:.8},{opacity:1,transform:'none'}],{duration:reduce?1:480,delay:d,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'});
+      if(!reduce)setTimeout(function(){fin.animate([{transform:'translate(0,0)'},{transform:'translate('+(Math.random()*8-4)+'px,'+(Math.random()*8-4)+'px)'},{transform:'translate(0,0)'}],{duration:140});},d+250);
+    });
+    setTimeout(function(){fin.classList.add('is-done');},reduce?0:550+list.length*320+500);
+  }
+  function close(){if(!fin||fin.hidden||!fin.classList.contains('is-done'))return;
+    var a=fin.animate([{opacity:1},{opacity:0}],{duration:350,easing:'ease',fill:'forwards'});
+    a.onfinish=function(){fin.hidden=true;fin.classList.remove('is-open','is-done');document.documentElement.classList.remove('tld-collect-open');};}
+  if(fin){fin.hidden=true;fin.addEventListener('click',close);window.addEventListener('keydown',function(e){if(e.key==='Escape')close();});}
+})();
+
+/* --- src/home/services.js --- */
+/* The Lazy Dog — section services en colonnes (maquette « Services_Hover »).
+   [data-services] : la section (épinglée à l'écran le temps de remplir les colonnes) ; [data-services-pin] : le bloc fixé ;
+   [data-service] : chaque colonne, avec un remplissage [data-service-fill] qui monte de bas en haut au scroll, l'une après l'autre.
+   Le scroll reprend normalement une fois la dernière colonne pleine.
+   Au survol d'une colonne, une vidéo courte se lance en boucle dans la colonne (data-video sur la colonne,
+   sinon data-video de la section). Classes posées : .is-hover (survol), .is-full (colonne remplie au niveau du titre).
+   data-services-step (défaut 0.5) = scroll par colonne, en hauteur d'écran. */
+(function(){
+  var sec=document.querySelector('[data-services]');if(!sec)return;
+  var pin=sec.querySelector('[data-services-pin]'),cols=[].slice.call(sec.querySelectorAll('[data-service]'));if(!pin||!cols.length)return;
+  var n=cols.length,STEP=parseFloat(sec.getAttribute('data-services-step'))||.5,def=sec.getAttribute('data-video')||'',ticking=false;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  cols.forEach(function(col){
+    var f=col.querySelector('[data-service-fill]');if(f){f.style.transformOrigin='50% 100%';f.style.transform='scaleY(0)';f.style.willChange='transform';}
+    col._fill=f;col._label=col.querySelector('[data-service-label]');
+    var src=col.getAttribute('data-video')||def;if(!src)return;
+    var box=document.createElement('div');box.className='tld-service__media';box.setAttribute('aria-hidden','true');
+    var v=document.createElement('video');v.muted=true;v.loop=true;v.playsInline=true;v.preload='none';v.setAttribute('muted','');v.setAttribute('playsinline','');
+    box.appendChild(v);col.insertBefore(box,col.firstChild);col._video=v;col._src=src;
+    col.addEventListener('pointerenter',function(e){if(e.pointerType==='touch')return;on(col);});
+    col.addEventListener('pointerleave',function(e){if(e.pointerType==='touch')return;off(col);});
+    col.addEventListener('focus',function(){on(col);});col.addEventListener('blur',function(){off(col);});
+  });
+  function on(col){var v=col._video;if(!v)return;if(!v.getAttribute('src'))v.src=col._src;col.classList.add('is-hover');var p=v.play();if(p&&p.catch)p.catch(function(){});}
+  function off(col){col.classList.remove('is-hover');if(col._video)col._video.pause();}
+  function layout(){var vh=window.innerHeight;sec.style.height=(vh+n*STEP*vh)+'px';pin.style.position='sticky';pin.style.top='0px';pin.style.height=vh+'px';update();}
+  function update(){
+    ticking=false;
+    var r=sec.getBoundingClientRect(),vh=window.innerHeight,len=Math.max(1,r.height-vh);
+    var t=reduce?1:Math.max(0,Math.min(1,-r.top/len)),x=t*n;
+    cols.forEach(function(col,j){var v=Math.max(0,Math.min(1,x-j));
+      if(col._fill)col._fill.style.transform='scaleY('+v.toFixed(4)+')';
+      if(col._label){var h=col.offsetHeight||1,need=1-(col._label.offsetTop+col._label.offsetHeight*.5)/h;col.classList.toggle('is-full',v>=need);}
+    });
+  }
+  function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}
+  window.addEventListener('scroll',req,{passive:true});
+  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(layout,120);});
+  window.addEventListener('load',layout);layout();
 })();

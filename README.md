@@ -15,6 +15,8 @@ Code JavaScript du site Webflow **The Lazy Dog**, servi par [jsDelivr](https://w
 | `src/home/reel-grow.js` | Showreel carré au départ qui grandit au scroll jusqu'à 70 % de la largeur en 16:9 (`[data-grow]`) | Page d'accueil |
 | `src/home/build-section.js` | Section jaune : le fond se construit de bas en haut puis le texte s'écrit ; au survol d'une catégorie, le fond devient l'image de la catégorie (`[data-build]`, `[data-hover-cat][data-image]`) | Page d'accueil |
 | `src/home/snap.js` | Ancres de scroll douces entre les sections `[data-snap]` (premier écran -> projets -> section jaune) | Page d'accueil |
+| `src/home/collect.js` | Stickers à collectionner (`[data-collect]`) : noir et blanc à 30 %, couleur au clic, barre en bas à gauche (`[data-collect-bar]`), écran final glass (`[data-collect-final]`) | Page d'accueil |
+| `src/home/services.js` | Services en colonnes épinglées : remplissage au scroll, vidéo au survol (`[data-services]`) | Page d'accueil |
 | `src/home/projects.js` | Projets épinglés : fond en 4 colonnes qui se remplissent au scroll, le projet change quand la colonne est pleine (`[data-projects]`) | Page d'accueil |
 | `src/home/parallax.js` | Parallax au scroll : image dans son cadre (`[data-parallax]`) et décalage des cartes projets (`[data-speeds]`, `[data-speed]`) | Page d'accueil |
 | `src/global/cursor.js` | Curseur étoile (normal / survol / clic) en mode difference | Toutes les pages |
@@ -58,4 +60,6 @@ Les liens actuels pointent sur le hash d'un commit : la version servie ne change
 - Ancres douces : `data-snap` sur chaque section d'arrivée ; une section épinglée (projets) se scrolle normalement jusqu'à sa fin. Durée : `data-snap-duration` (1700 ms) sur `<body>`.
 - Section jaune : `data-build` (section), `data-build-bg` (fond), `data-words-wait` sur le texte, `data-hover-cat` + `data-image` sur chaque catégorie.
 - Projets : `data-projects` (+ `data-projects-step`, 0.8 écran par projet), `data-projects-pin`, `data-col` (colonnes, avec un enfant de remplissage).
+- Stickers à collectionner : `data-collect="id"` (+ variable CSS `--r` pour la rotation), `data-collect-bar` avec des `data-collect-slot="id"`, `data-collect-final` avec des `data-final="id"`. Le loader empile les mêmes stickers à l'étape 00.
+- Services : `data-services` (+ `data-services-step`, 0.5 écran par colonne, `data-video` par défaut), `data-services-pin`, `data-service` (+ `data-video`), `data-service-fill`, `data-service-label`.
 - Curseur : tout élément avec `data-cursor="hover"` déclenche l'état survol.
