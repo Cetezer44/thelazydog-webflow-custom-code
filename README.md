@@ -63,3 +63,11 @@ Les liens actuels pointent sur le hash d'un commit : la version servie ne change
 - Stickers à collectionner : `data-collect="id"` (+ variable CSS `--r` pour la rotation), `data-collect-bar` avec des `data-collect-slot="id"`, `data-collect-final` avec des `data-final="id"`. Le loader empile les mêmes stickers à l'étape 00.
 - Services : `data-services` (+ `data-services-step`, 0.5 écran par colonne, `data-video` par défaut), `data-services-pin`, `data-service` (+ `data-video`), `data-service-fill`, `data-service-label`.
 - Curseur : tout élément avec `data-cursor="hover"` déclenche l'état survol.
+
+## v4.0.0 (maquette 6 nov.)
+- **Loader** : pile de stickers plus lente, logo révélé ligne par ligne par un masque (bas → haut), lettres écartées puis imbriquées, l'œil disparaît en scale et réapparaît dans le header.
+- **Projets** (`works.js`) : au survol, le nom du projet (lu dans `.tld-work__title`, masqué) défile à l'infini dans l'image avec un filtre sombre ; `data-marquee-speed` (px/s) sur `.tld-work`. Parallax léger automatique dans `.tld-work__media`.
+- **Curseur projets** (global) : pastille jaune sur `.tld-work` ou `[data-cursor="projects"]`.
+- **Fond vers le noir** (`bg-fade.js`) : `[data-bg-dark="#0c1016"]` sur la section ; les sections autour doivent avoir un fond transparent.
+- **Scroll fluide** (global) : Lenis 1.3, accessible via `window.tldLenis` ; arrêté pendant le loader et l'écran final.
+- **Écran final** : les stickers s'empilent au centre (positions de la maquette « Stickers_OK »).

@@ -5,9 +5,9 @@ import { minify } from 'terser';
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 const bundles = {
   // Page d'accueil — l'ordre compte : le loader prépare la page, les autres scripts s'y branchent.
-  home: ['src/home/loader.js', 'src/home/stickers.js', 'src/home/eye.js', 'src/home/showreel.js', 'src/home/words.js', 'src/home/parallax.js', 'src/home/reveal.js', 'src/home/reel-grow.js', 'src/home/build-section.js', 'src/home/projects.js', 'src/home/snap.js', 'src/home/collect.js', 'src/home/services.js'],
+  home: ['src/home/loader.js', 'src/home/stickers.js', 'src/home/eye.js', 'src/home/showreel.js', 'src/home/words.js', 'src/home/parallax.js', 'src/home/reveal.js', 'src/home/reel-grow.js', 'src/home/build-section.js', 'src/home/projects.js', 'src/home/snap.js', 'src/home/collect.js', 'src/home/services.js', 'src/home/works.js', 'src/home/bg-fade.js'],
   // Toutes les pages
-  global: ['src/global/cursor.js'],
+  global: ['node_modules/lenis/dist/lenis.min.js', 'src/global/smooth.js', 'src/global/cursor.js'],
 };
 
 mkdirSync('dist', { recursive: true });

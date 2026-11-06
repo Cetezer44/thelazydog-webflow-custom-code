@@ -1,12 +1,12 @@
 /* The Lazy Dog — parallax au scroll.
-   [data-parallax] (cadre en overflow:hidden) : l'image à l'intérieur glisse plus lentement que le cadre. Valeur = amplitude (défaut 0.12 = 12 % de la hauteur).
+   [data-parallax] et .tld-work__media (cadre en overflow:hidden) : l'image à l'intérieur glisse plus lentement que le cadre. Valeur = amplitude (défaut 0.12 = 12 % de la hauteur).
    [data-speed] : l'élément entier avance plus vite ou plus lentement que la page (ex. 0.1 = 10 % de la hauteur de l'écran).
    [data-speeds="0,0.08,…"] sur une liste : une vitesse par élément de la liste. Désactivé sur mobile. */
 (function(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  var frames=[].slice.call(document.querySelectorAll('[data-parallax]')).map(function(el){
-    var img=el.querySelector('img');if(!img)return null;
-    var a=parseFloat(el.getAttribute('data-parallax'));if(!(a>0))a=.12;
+  var frames=[].slice.call(document.querySelectorAll('[data-parallax],.tld-work__media')).map(function(el){
+    var img=el.querySelector('img');if(img&&img.closest('.tld-work__hover'))img=null;if(!img)return null;
+    var a=parseFloat(el.getAttribute('data-parallax'));if(!(a>0))a=el.hasAttribute('data-parallax')?.12:.07; /* projets : parallax léger */
     img.style.position='absolute';img.style.left='0';img.style.width='100%';img.style.maxWidth='none';
     img.style.top=(-a*100)+'%';img.style.height=((1+2*a)*100)+'%';img.style.objectFit='cover';img.style.willChange='transform';
     return {el:el,img:img,a:a};
