@@ -20,7 +20,7 @@
   heroLines.forEach(function(el){el.style.transform='translateY(105%)';});
   V.ready(function(){
     if(!hero)return;
-    var guides=[].slice.call(hero.querySelectorAll('.v2-guides i'));
+    var guides=[].slice.call(hero.querySelectorAll('.v2-guides>span'));
     /* lead : les lignes du titre, en vague (110 ms puis 90 ms) */
     heroLines.forEach(function(el,i){el.style.transform='';if(!V.reduce)rise(el,i===0?0:110+(i-1)*90,1100);});
     /* décor : la grille se dessine depuis le haut, du centre vers les bords, en même temps que le titre */

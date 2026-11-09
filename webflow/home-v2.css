@@ -33,8 +33,8 @@ html.tld-dark .v2-head.is-scrolled{background-color:rgba(12,16,22,.6);color:var(
 /* hero */
 .v2-hero{position:relative;min-height:100vh;padding:150px var(--v2-m) 40px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
 .v2-guides{position:absolute;top:0;bottom:0;left:var(--v2-m);right:var(--v2-m);display:grid;grid-template-columns:repeat(6,1fr);pointer-events:none}
-.v2-guides i{display:block;border-left:1px solid var(--v2-line);transform-origin:50% 0}
-.v2-guides i:last-child{border-right:1px solid var(--v2-line)}
+.v2-guides>span{display:block;border-left:1px solid var(--v2-line);transform-origin:50% 0}
+.v2-guides>span:last-child{border-right:1px solid var(--v2-line)}
 .v2-hero__label{position:relative}
 .v2-hero__title{position:relative;margin:6vh 0 0;font-weight:300;font-size:clamp(56px,10.4vw,188px);line-height:.9;letter-spacing:-.045em}
 .v2-line{display:block;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em}
@@ -45,8 +45,8 @@ html.tld-dark .v2-head.is-scrolled{background-color:rgba(12,16,22,.6);color:var(
 .v2-hero__intro{grid-column:1 / span 4;margin:0;font-size:17px;line-height:1.4;font-weight:300}
 .v2-hero__cta{grid-column:9 / span 2;justify-self:start}
 .v2-hero__scroll{grid-column:11 / span 2;justify-self:end;display:flex;align-items:center;gap:12px}
-.v2-hero__scroll i{position:relative;display:block;width:1px;height:40px;overflow:hidden;background-color:var(--v2-line)}
-.v2-hero__scroll i:after{content:"";position:absolute;left:0;top:0;width:1px;height:100%;background-color:var(--v2-ink);animation:v2-scroll 2.2s var(--v2-ease-io) infinite}
+.v2-hero__scroll>span{position:relative;display:block;width:1px;height:40px;overflow:hidden;background-color:var(--v2-line)}
+.v2-hero__scroll>span:after{content:"";position:absolute;left:0;top:0;width:1px;height:100%;background-color:var(--v2-ink);animation:v2-scroll 2.2s var(--v2-ease-io) infinite}
 @keyframes v2-scroll{0%{transform:translateY(-100%)}60%,100%{transform:translateY(100%)}}
 .v2-page .tld-collect.is-s1{position:absolute;left:auto;right:12%;top:30%;width:clamp(140px,16vw,240px)}
 /* showreel qui s'ouvre au scroll */
@@ -204,7 +204,7 @@ html.tld-dark .v2-head.is-scrolled{background-color:rgba(12,16,22,.6);color:var(
 .v2-page .tld-collect.is-s3{position:absolute;left:auto;right:18%;top:90px;width:clamp(100px,10vw,160px)}
 /* états avant apparition (le JS les retire) */
 html.v2-js [data-v2-fade]{opacity:0}
-html.v2-js .v2-guides i{transform:scaleY(0)}
+html.v2-js .v2-guides>span{transform:scaleY(0)}
 /* tablette */
 @media (max-width:991px){
  :root{--v2-m:24px;--v2-g:16px}
@@ -241,6 +241,6 @@ html.v2-js .v2-guides i{transform:scaleY(0)}
  .v2-indicator{display:none}
 }
 @media (prefers-reduced-motion:reduce){
- .v2-dot,.v2-hero__scroll i:after{animation:none}
+ .v2-dot,.v2-hero__scroll>span:after{animation:none}
  .v2-studio__text .v2-w{opacity:1!important}
 }
