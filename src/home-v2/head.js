@@ -38,7 +38,7 @@
     if(bar)bar.style.transform='scaleX('+(max>0?V.clamp(y/max,0,1):0).toFixed(4)+')';
     var mid=vh*.5,s=null;secs.forEach(function(x){var r=x.getBoundingClientRect();if(r.top<=mid&&r.bottom>mid)s=x;});
     if(s)setSection(s,dir);
-    if(ind){var f=document.querySelector('.v2-foot');ind.style.opacity=f&&f.getBoundingClientRect().bottom<vh+4?'0':'';}
+    if(ind){var f=document.querySelector('.v2-foot');ind.style.opacity=(y<vh*.6||(f&&f.getBoundingClientRect().bottom<vh+4))?'0':'';}
     lastY=y;
   }
   function req(){if(!ticking){ticking=true;requestAnimationFrame(update);}}

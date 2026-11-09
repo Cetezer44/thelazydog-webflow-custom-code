@@ -27,7 +27,7 @@ html.tld-dark .v2-head.is-scrolled{background-color:rgba(12,16,22,.6);color:var(
 .v2-progress{position:absolute;left:0;right:0;bottom:0;height:1px;background-color:currentColor;transform:scaleX(0);transform-origin:0 50%;opacity:.5}
 /* indicateur de section (fixe, en bas à droite) */
 .v2-indicator,.v2-toast,.v2-preview{font-family:Xmind,"Helvetica Neue",Arial,sans-serif}
-.v2-indicator{position:fixed;right:var(--v2-m);bottom:28px;z-index:60;display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;pointer-events:none;mix-blend-mode:difference;color:#f3efe9}
+.v2-indicator{position:fixed;right:var(--v2-m);bottom:28px;z-index:60;display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;pointer-events:none;mix-blend-mode:difference;color:#f3efe9;transition:opacity .3s ease}
 .v2-indicator__num,.v2-indicator__name{position:relative;display:block;height:16px;overflow:hidden}
 .v2-indicator__num span,.v2-indicator__name span{display:block;line-height:16px}
 /* hero */
