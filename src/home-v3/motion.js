@@ -51,6 +51,12 @@
       lineEls.forEach(function(el){if(el._v3html!=null&&el._v3done){el.innerHTML=el._v3html;}});});
   }
 
+  /* 1b. Hero : le titre géant monte ligne par ligne une fois l'intro terminée --------------------- */
+  var big=[].slice.call(document.querySelectorAll('.v3-hero__in'));
+  if(big.length&&!reduce){big.forEach(function(el){el.style.transform='translateY(130%)';});
+    ready(function(){big.forEach(function(el,i){el.style.transform='';
+      el.animate([{transform:'translateY(130%)'},{transform:'none'}],{duration:1300,delay:120+i*110,easing:EXPO,fill:'backwards'});});});}
+
   /* 2. Projets : l'image se pose, cartes inclinées selon la vitesse ----------------------------- */
   var works=[].slice.call(document.querySelectorAll('.tld-work'));
   if(!reduce){
