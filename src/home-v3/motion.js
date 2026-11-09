@@ -37,9 +37,11 @@
     return [].slice.call(el.querySelectorAll('.v3-line__in'));
   }
   var lineEls=[].slice.call(document.querySelectorAll(LINE_SEL));
+  if(reduce||!lineEls.length)root.classList.remove('v3-pre');
   if(!reduce&&lineEls.length){
     var go=function(){
       lineEls.forEach(function(el){el._v3in=split(el);el._v3in.forEach(function(l){l.style.transform='translateY(110%)';});});
+      root.classList.remove('v3-pre'); /* les textes étaient masqués en attendant le découpage (pas de saut) */
       inView(lineEls,function(el){el._v3done=true;(el._v3in||[]).forEach(function(l,i){l.style.transform='';
         l.animate([{transform:'translateY(110%)'},{transform:'none'}],{duration:1000,delay:i*80,easing:EXPO,fill:'backwards'});});});
     };
@@ -84,19 +86,28 @@
     inView([document.querySelector('[data-services]')||labels[0]],function(){labels.forEach(function(l,i){l.style.opacity='';
       l.animate([{opacity:0,transform:'translateY(24px)'},{opacity:1,transform:'none'}],{duration:800,delay:120+i*70,easing:OUT,fill:'backwards'});});},'0px 0px -35% 0px');}
 
-  /* 5. Footer : le logotype monte en vague ; survol lettre par lettre --------------------------- */
+  /* 5. Footer : le logotype monte en vague, chaque lettre derrière son propre masque (aucune lettre coupée) ; survol lettre par lettre */
   var logo=document.querySelector('.tld-footer__logo');
   if(logo){var letters=[].slice.call(logo.querySelectorAll('svg'));logo.classList.add('v3-logo');
-    if(!reduce){letters.forEach(function(l){l.style.transform='translateY(115%)';});
-      inView([logo],function(){letters.forEach(function(l,i){l.style.transform='';
-        l.animate([{transform:'translateY(115%) rotate(8deg)'},{transform:'none'}],{duration:1200,delay:i*55,easing:EXPO,fill:'backwards'});});},'0px 0px -5% 0px');}
-    if(fine&&!reduce)letters.forEach(function(l,i){var eye=i===8;l.addEventListener('pointerenter',function(){
-      l.animate(eye?[{rotate:'0deg'},{rotate:'360deg'}]:[{translate:'0 0'},{translate:'0 -18%'},{translate:'0 0'}],{duration:eye?700:450,easing:eye?OUT:'cubic-bezier(.34,1.6,.5,1)'});});});
+    if(!reduce){var HID={transform:'translateY(100%)',clipPath:'inset(0 0 100% 0)'};
+      letters.forEach(function(l){l.style.transform=HID.transform;l.style.clipPath=HID.clipPath;});
+      inView([logo],function(){letters.forEach(function(l,i){l.style.transform='';l.style.clipPath='';
+        l.animate([HID,{transform:'translateY(0)',clipPath:'inset(0 0 0% 0)'}],{duration:1100,delay:i*55,easing:EXPO,fill:'backwards'});});},'0px 0px -5% 0px');}
+    if(fine&&!reduce)letters.forEach(function(l,i){var eye=i===8,busy=false;l.addEventListener('pointerenter',function(){if(busy)return;busy=true;
+      var a=l.animate(eye?[{rotate:'0deg'},{rotate:'360deg'}]:[{translate:'0 0'},{translate:'0 -14%'},{translate:'0 0'}],{duration:eye?700:480,easing:eye?OUT:'cubic-bezier(.34,1.56,.64,1)'});a.onfinish=function(){busy=false;};});});
   }
 
-  /* 6. Liens : survol roulant -------------------------------------------------------------------- */
-  if(fine)[].forEach.call(document.querySelectorAll('.tld-nav__link,.tld-footer__big,.tld-footer__link'),function(a){
-    if(a.querySelector('.v3-roll'))return;var t=a.childNodes.length===1&&a.firstChild.nodeType===3?a.textContent:null;if(!t)return;
-    a.textContent='';var r=document.createElement('span');r.className='v3-roll';r.setAttribute('data-text',t);var s=document.createElement('span');s.textContent=t;r.appendChild(s);a.appendChild(r);
+  /* 6. Liens textes : au survol, les lettres partent vers le haut et reviennent par le bas, en léger décalage.
+     Chaque lettre porte sa copie en text-shadow juste en dessous ; le mot est découpé par clip-path (pas d'overflow,
+     donc la ligne de base ne bouge pas). */
+  var LINKS='.tld-nav__link,.tld-footer__big,.tld-footer__link,.tld-works__more>span:last-child,.tld-services__more>span:last-child';
+  [].forEach.call(document.querySelectorAll(LINKS),function(a){
+    var tn=[].filter.call(a.childNodes,function(n){return n.nodeType===3&&n.textContent.trim();})[0];if(!tn||a.querySelector('.v3-roll'))return;
+    var text=tn.textContent.trim(),r=document.createElement('span');r.className='v3-roll';r.setAttribute('aria-label',text);
+    text.split('').forEach(function(ch,i){var c=document.createElement('span');c.className='v3-ch';c.setAttribute('aria-hidden','true');c.style.setProperty('--i',i);c.textContent=ch===' '?'\u00a0':ch;r.appendChild(c);});
+    a.replaceChild(r,tn);
+    /* le masque suit la hauteur réelle des lettres, même si la hauteur de ligne est plus petite que la police */
+    var cs=getComputedStyle(a),fs=parseFloat(cs.fontSize)||16,lh=parseFloat(cs.lineHeight);if(isNaN(lh))lh=fs*1.2;
+    r.style.setProperty('--v3-ov',(Math.max(0,(fs*1.12-lh)/2)/fs+.04).toFixed(3));
   });
 })();
