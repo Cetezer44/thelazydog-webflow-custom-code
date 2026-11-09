@@ -1,4 +1,4 @@
-/*! The Lazy Dog — home-v2.js v4.1.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
+/*! The Lazy Dog — home-v2.js v4.2.0 — github.com/Cetezer44/thelazydog-webflow-custom-code */
 /* --- src/home/loader.js --- */
 /* The Lazy Dog — loader de la page d'accueil (maquette « Animation home » Step 00 → 5)
    Step 00 : les stickers de la page ([data-collect]) s'empilent au centre, puis disparaissent ;
