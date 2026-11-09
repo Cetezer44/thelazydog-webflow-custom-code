@@ -22,5 +22,11 @@
   function tipEl(){if(!tip){tip=document.createElement('div');tip.className='v2-toast';tip.setAttribute('aria-hidden','true');document.body.appendChild(tip);
     window.addEventListener('pointermove',function(e){tx=e.clientX;ty=e.clientY;if(!traf)traf=requestAnimationFrame(function(){traf=null;tip.style.transform='translate3d('+(tx+18)+'px,'+(ty+18)+'px,0)';});},{passive:true});}return tip;}
   function toast(text){if(!fine)return;var t=tipEl();if(text===null){t.classList.remove('is-on');return;}t.textContent=text;t.classList.add('is-on');}
+  /* Webflow transforme les <button> en liens sans href : on leur rend un comportement de bouton (clavier, pas de saut en haut de page) */
+  [].forEach.call(document.querySelectorAll('.v2-page a[type="button"]'),function(a){
+    a.setAttribute('role','button');if(!a.hasAttribute('tabindex'))a.tabIndex=0;
+    a.addEventListener('click',function(e){e.preventDefault();});
+    a.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();a.click();}});
+  });
   window.tldV2={reduce:reduce,fine:fine,E:E,clamp:clamp,inView:inView,ready:ready,toast:toast};
 })();

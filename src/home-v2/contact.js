@@ -16,7 +16,12 @@
     });
   });
   [].forEach.call(document.querySelectorAll('.v2-news__form'),function(f){
-    var inp=f.querySelector('input[type="email"],input'),hint=f.parentNode.querySelector('.v2-news__hint');if(!inp||!hint)return;
+    var inp=f.querySelector('input[type="email"],input'),box=f.closest('.v2-news__wrap')||f.parentNode,hint=box.querySelector('.v2-news__hint');if(!inp)return;
+    if(!inp.getAttribute('placeholder'))inp.setAttribute('placeholder','Votre adresse email');inp.setAttribute('aria-label','Adresse email');inp.setAttribute('autocomplete','email');
+    var ok=box.querySelector('.w-form-done'),ko=box.querySelector('.w-form-fail');
+    if(ok)ok.innerHTML='<div class="v2-news__ok">Merci ! À très vite dans votre boîte mail.</div>';
+    if(ko)ko.innerHTML='<div>Oups, l’inscription n’a pas fonctionné. Réessayez dans un instant.</div>';
+    if(!hint)return;
     function check(){var v=inp.value.trim();hint.textContent=!v?'':(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)?'Appuyez sur Entrée pour vous inscrire ↵':'Adresse email incomplète');}
     inp.addEventListener('input',check);
   });
