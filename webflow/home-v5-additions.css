@@ -1,0 +1,31 @@
+/* === Maquette du 9 nov. : services au survol, barre de stickers verticale, écran final en ligne === */
+/* services : colonnes plus basses ; au survol, les autres colonnes s'effacent et la vidéo passe en fond de section */
+.tld-services__cols{height:35%;z-index:1}
+.tld-services__head{position:relative;z-index:1}
+.tld-services__bg{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;opacity:0;transition:opacity .6s ease;pointer-events:none}
+.tld-services__bg video{display:block;width:100%;height:100%;object-fit:cover}
+.tld-services.is-hovering .tld-services__bg{opacity:var(--svc-video,.15)}
+.tld-service__fill{transition:opacity .35s ease}
+.tld-services.is-hovering .tld-service:not(.is-hover) .tld-service__fill{opacity:0}
+.tld-services.is-hovering .tld-service:not(.is-hover) .tld-service__label{color:#f3efe9}
+.tld-service.is-hover .tld-service__label{color:#0c1016}
+.tld-services .tld-collect:not(.is-collected){opacity:.15}.tld-services .tld-collect:not(.is-collected):hover{opacity:.4}
+/* barre des stickers : verticale, fixe à gauche */
+.tld-collect-bar{left:33px;bottom:61px;flex-direction:column;align-items:flex-start;gap:10.5px}
+.tld-collect-slot{width:30px;height:auto}
+.tld-collect-slot[data-collect-slot="1"]{width:68px;margin:19.4px 0 19.4px -19.4px;transform:rotate(-90deg)}
+.tld-collect-slot[data-collect-slot="5"]{width:50px;margin:10.4px 0 10.4px -10.4px;transform:rotate(-90deg)}
+/* écran final : titre + stickers en ligne */
+.tld-collect-final{flex-direction:column;background-color:rgba(12,16,22,.8)}
+.tld-collect-final__title{position:relative;display:flex;flex-direction:column;align-items:center;font-family:Xmind,sans-serif;font-weight:600;font-size:51.84px;line-height:1.2;text-transform:uppercase;text-align:center;color:#f3efe9}
+.tld-collect-final__line{position:relative;display:block}
+.tld-collect-final__count{position:absolute;left:100%;bottom:.55em;margin-left:16px;font-weight:300;font-size:21.84px;line-height:1.2;text-transform:none;white-space:nowrap;font-variant-numeric:tabular-nums;transform-origin:0 50%}
+.tld-collect-final__row,.tld-collect-final__row.is-pile{position:static;display:flex;align-items:center;gap:40px;width:auto;height:auto;margin-top:52px}
+.tld-collect-final__row img{display:block;height:80px;width:auto;max-width:none;opacity:0}
+@media (max-width:767px){
+ .tld-collect-bar{left:20px;bottom:20px;flex-direction:row;align-items:center;gap:10px}
+ .tld-collect-slot,.tld-collect-slot[data-collect-slot]{width:auto;height:26px;margin:0;transform:none}
+ .tld-collect-final__title{font-size:34px}.tld-collect-final__count{font-size:16px;margin-left:10px}
+ .tld-collect-final__row,.tld-collect-final__row.is-pile{flex-wrap:wrap;justify-content:center;gap:16px;padding:0 20px;margin-top:36px}
+ .tld-collect-final__row img{height:48px}
+}
