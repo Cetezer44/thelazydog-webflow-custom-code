@@ -66,6 +66,7 @@
   }
   function revealed(){window.dispatchEvent(new CustomEvent('tld:revealed'));}
   function finish(){
+    window.tldLoaded=true;window.dispatchEvent(new CustomEvent('tld:loaded'));
     root.classList.remove('tld-loading');
     loader.parentNode&&loader.parentNode.removeChild(loader);
     if(!reduce)reveal();else revealed();
