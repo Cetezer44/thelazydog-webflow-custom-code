@@ -72,11 +72,9 @@ html.v3 .v3-hero__big .tld-collect.is-s6{left:2.645em;top:1.088em;width:.799em;-
 html.v3 .v3-hero__note{position:absolute;left:30.87em;top:7.476em;z-index:5;display:block;font-family:"Sedgwick Ave",cursive;font-size:.1133em;font-weight:400;line-height:1.2;text-align:center;text-transform:none;white-space:nowrap;color:#0c1016;transform:translate(-50%,-50%) rotate(-11.56deg);pointer-events:none}
 html.v3 .v3-hero__note svg{position:absolute;left:-.75em;top:1.55em;width:.6em;height:1em;overflow:visible}
 html.v3 .tld-reel{position:absolute!important;right:30px;bottom:61px;top:auto;left:auto;z-index:2;width:clamp(200px,18.54vw,360px)!important;height:auto!important;max-width:none!important;margin:0!important;aspect-ratio:267/157.66!important;border-radius:5px!important}
-@media (hover:hover) and (pointer:fine){
- html.v3 .tld-hero .tld-reel__cursor{position:absolute;top:50%;left:50%;opacity:1;transform:none!important}
- html.v3 .tld-hero .tld-reel__ring{transform:scale(1.27)}
- html.v3 .tld-hero .tld-reel.is-hover .tld-reel__ring{transform:scale(1.45)}
-}
+/* showreel du hero : simple vignette en lecture, aucun pictogramme ni effet au survol pour le moment */
+html.v3 .tld-hero .tld-reel__cursor{display:none!important}
+html.v3 .tld-hero .tld-reel{cursor:auto;pointer-events:none}
 /* barre des stickers : verticale, fixe à droite */
 html.v3 .tld-collect-bar{left:auto;right:11.4px;top:230px;bottom:auto} /* colonne de 30 px calée à 30 px du bord (les slots tournés débordent de 19,4 px) */
 /* stickers à collectionner : nouvelles positions (centre et taille réelle relevés sur la maquette) */
