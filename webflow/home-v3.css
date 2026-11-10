@@ -69,7 +69,7 @@ html.v3 .v3-hero__lazy,html.v3 .v3-hero__dog{display:inline-block}
 html.v3 .v3-hero__gap{display:inline-block;width:var(--v3-gap,1.1em)}
 /* sticker n°6 dans le trou de « LAZY · DOG », avec la note manuscrite */
 html.v3 .v3-hero__big .tld-collect.is-s6{left:2.645em;top:1.088em;width:.799em;--r:24deg}
-html.v3 .v3-hero__note{position:absolute;left:30.87em;top:7.476em;z-index:5;display:block;font-family:"Sedgwick Ave",cursive;font-size:.1133em;font-weight:400;line-height:1.2;text-align:center;text-transform:none;white-space:nowrap;color:#0c1016;transform:translate(-50%,-50%) rotate(-11.56deg);pointer-events:none}
+html.v3 .v3-hero__note{position:absolute;left:34.62em;top:7.743em;z-index:5;display:block;font-family:"Sedgwick Ave",cursive;font-size:.1em;font-weight:400;line-height:1.2;text-align:center;text-transform:none;white-space:nowrap;color:#0c1016;transform:translate(-50%,-50%) rotate(-11.56deg);pointer-events:none}
 html.v3 .v3-hero__note svg{position:absolute;left:-.75em;top:1.55em;width:.6em;height:1em;overflow:visible}
 html.v3 .tld-reel{position:absolute!important;right:30px;bottom:61px;top:auto;left:auto;z-index:2;width:clamp(200px,18.54vw,360px)!important;height:auto!important;max-width:none!important;margin:0!important;aspect-ratio:267/157.66!important;border-radius:5px!important}
 /* showreel du hero : simple vignette en lecture, aucun pictogramme ni effet au survol pour le moment */
@@ -78,11 +78,15 @@ html.v3 .tld-hero .tld-reel{cursor:auto;pointer-events:none}
 /* barre des stickers : verticale, fixe à droite */
 html.v3 .tld-collect-bar{left:auto;right:11.4px;top:230px;bottom:auto} /* colonne de 30 px calée à 30 px du bord (les slots tournés débordent de 19,4 px) */
 /* stickers à collectionner : nouvelles positions (centre et taille réelle relevés sur la maquette) */
-html.v3 .tld-collect.is-s1{--r:20.26deg;left:82.37%;top:683px;width:clamp(150px,19.48vw,281px)}
-html.v3 .tld-collect.is-s7{left:6.18%;top:1530px;width:clamp(80px,8.76vw,126px)}
+html.v3 .tld-collect.is-s1{--r:20.26deg;left:8.39%;top:1585px;width:clamp(120px,14.09vw,203px)}
+html.v3 .tld-collect.is-s7{left:77.89%;top:769px;width:clamp(70px,7.3vw,105px)}
 html.v3 .tld-services .tld-collect:not(.is-collected){opacity:.1}
-html.v3 .tld-collect.is-s4{left:75.16%;top:199px}
-html.v3 .tld-collect.is-s3{left:52.09%;top:126px}
+html.v3 .tld-collect.is-s4{left:73.53%;top:213px;width:clamp(70px,7.91vw,114px)}
+html.v3 .tld-collect.is-s3{left:11.98%;top:193px;width:clamp(80px,9.44vw,136px)}
+/* le n°3 vit maintenant dans « Reste informé » ; un éventuel doublon resté dans le footer est masqué */
+html.v3 .tld-footer>.tld-collect.is-s3{display:none!important}
+/* projets : 100 px de plus au-dessus (maquette du 10 nov., 11 h 37) */
+@media (min-width:768px){html.v3 .tld-works{padding-top:339px;padding-bottom:301px}}
 /* newsletter */
 html.v3 .tld-news{height:800px;background-color:#f43210}
 html.v3 .tld-news__star{top:170px}
@@ -116,7 +120,8 @@ html.v3 .tld-footer__cols{margin-right:40px}
  html.v3 .v3-hero__note{display:none}
  html.v3 .tld-reel{right:20px;bottom:70px;width:52vw!important}
  html.v3 .tld-collect-bar{left:20px;right:auto;top:auto;bottom:20px}
- html.v3 .tld-collect.is-s1{left:auto;right:10px;top:-40px;width:150px}
+ html.v3 .tld-collect.is-s1{left:auto;right:10px;top:42%;width:120px}
+ html.v3 .tld-collect.is-s3{left:auto;right:16px;top:24px;width:90px}
  html.v3 .tld-news{height:auto}
  html.v3 .tld-news__form{margin-top:32px}
  html.v3 .tld-contact{height:auto}
