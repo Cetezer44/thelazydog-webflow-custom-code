@@ -112,7 +112,8 @@ html.v3 .tld-footer__cols{margin-right:40px}
  html.v3 .tld-nav__link.is-vr{top:20px;right:20px}
  html.v3 .tld-hero__head{left:20px;right:20px;width:auto;top:120px}
  html.v3 .tld-hero__title{font-size:17px!important}
- html.v3 .v3-hero__big{left:20px;top:auto;bottom:calc(20px + 30vw + 90px);font-size:16.5vw}
+ html.v3 .v3-hero__big{left:20px;top:auto;bottom:calc(20px + 30vw + 90px);font-size:15vw}
+ html.v3 .v3-hero__note{display:none}
  html.v3 .tld-reel{right:20px;bottom:70px;width:52vw!important}
  html.v3 .tld-collect-bar{left:20px;right:auto;top:auto;bottom:20px}
  html.v3 .tld-collect.is-s1{left:auto;right:10px;top:-40px;width:150px}
