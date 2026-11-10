@@ -73,7 +73,7 @@
        .onfinish=function(){w.style.willChange='';};}
     ready(function(){fitGap(); /* trou calé avant le départ : DOG ne bouge plus ensuite */
       requestAnimationFrame(function(){requestAnimationFrame(function(){ /* laisse le loader se retirer avant de démarrer */
-      var T={the:0,lazy:180,stk:760,note:1060,arrow:1320,dog:1650,press:2600,click:2780};
+      var T={the:0,lazy:180,stk:760,note:1060,arrow:1320,dog:1650,press:3350,click:3530};
       rise(wThe,T.the);rise(wLazy,T.lazy);
       if(hs){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
         hs.animate([{opacity:0,scale:'.85'},{opacity:op,scale:'1'}],{duration:900,delay:T.stk,easing:SOFT,fill:'backwards'});}
