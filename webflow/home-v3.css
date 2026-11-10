@@ -49,28 +49,78 @@ html.v3 .tld-eye:active{scale:.94}
  html.v3 .v3-ch{transition:none}
 }
 
-/* ---- Hero v3 « éditorial » : texte décalé en haut, titre géant en bas à gauche, showreel en bas à droite, sticker n°1 à collectionner ---- */
-html.v3 .tld-hero{min-height:100vh;min-height:100svh;padding:0!important;overflow:clip}
-html.v3 .tld-hero__head{position:absolute;top:168px;left:33.5%;right:60px;max-width:880px!important;margin:0!important}
-html.v3 .tld-hero__title{max-width:none!important;margin:0;font-size:clamp(28px,3.15vw,48px)!important;font-weight:400;line-height:1.06;letter-spacing:-.012em;text-align:left!important;color:#16140f!important;mix-blend-mode:normal!important;--indent:0}
-html.v3 .tld-hero__title strong{font-weight:400}
-html.v3 .tld-hero__title .tld-sr{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;white-space:normal!important;font-weight:600}
-html.v3 .tld-hero .tld-collect.is-s1{left:calc(60px - 33.5vw);top:-6px;width:clamp(150px,15vw,230px)}
-html.v3 .v3-hero__big{position:absolute;left:96px;bottom:28px;z-index:1;margin:0;font-family:Xmind,"Instrument Sans",Arial,sans-serif;font-size:13.2vw;font-weight:600;line-height:.84;letter-spacing:-.045em;color:#16140f;pointer-events:none}
-html.v3 .v3-hero__l{display:block;clip-path:inset(-.12em -.2em -.2em -.1em)}
+/* ==== Maquette du 10 nov. (Homepage 107:248) — appliquée à la v3 uniquement ==== */
+/* nav : Projets · Services · Studio à gauche, Contact · Social à droite */
+html.v3 .tld-nav__link{font-weight:300}
+html.v3 .tld-nav__link.is-tr{left:237px;right:auto}
+html.v3 .tld-nav__link.is-br{right:122px}
+html.v3 .tld-nav__link.is-vr{top:30px;right:30px;bottom:auto;left:auto;writing-mode:horizontal-tb;transform:none}
+/* hero : texte d'intro en haut à droite, « THE LAZY DOG » géant, showreel en vignette */
+html.v3 .tld-hero{height:100vh;height:100svh;min-height:720px;padding:0!important;overflow:clip}
+html.v3 .tld-hero__head{position:absolute;top:236px;left:calc(50% + 170px);width:322px;max-width:none!important;margin:0!important}
+html.v3 .tld-hero__title{max-width:none!important;margin:0;font-size:18px!important;font-weight:300!important;line-height:1.2;letter-spacing:0;text-align:left!important;text-indent:0!important;color:#0c1016!important;mix-blend-mode:normal!important;--indent:0}
+html.v3 .tld-hero__title .tld-line:first-child{text-indent:0}
+html.v3 .tld-hero__title strong{font-weight:300}
+html.v3 .tld-hero__title .tld-sr{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;white-space:normal!important}
+html.v3 .v3-hero__big{position:absolute;left:6.945vw;top:43.8%;z-index:1;margin:0;font-family:Xmind,"Instrument Sans",Arial,sans-serif;font-size:10.417vw;font-weight:600;line-height:1;letter-spacing:0;text-transform:uppercase;color:#0c1016;white-space:nowrap}
+html.v3 .v3-hero__l{display:block;clip-path:inset(-.15em -.3em -.2em -.1em)}
 html.v3 .v3-hero__in{display:inline-block}
-html.v3 .v3-hero__ast{color:#ff581c;font-size:.55em;vertical-align:.62em;margin-left:.04em}
-html.v3 .tld-reel{position:absolute!important;right:60px;bottom:44px;z-index:2;width:min(420px,27vw)!important;height:auto!important;max-width:none!important;margin:0!important;aspect-ratio:16/9!important;border-radius:5px}
+html.v3 .v3-hero__gap{display:inline-block;width:var(--v3-gap,1.1em)}
+/* sticker n°6 dans le trou de « LAZY · DOG », avec la note manuscrite */
+html.v3 .v3-hero__big .tld-collect.is-s6{left:2.645em;top:1.088em;width:.799em;--r:24deg}
+html.v3 .v3-hero__note{position:absolute;left:30.87em;top:7.476em;z-index:5;display:block;font-family:"Sedgwick Ave",cursive;font-size:.1133em;font-weight:400;line-height:1.2;text-align:center;text-transform:none;white-space:nowrap;color:#0c1016;transform:translate(-50%,-50%) rotate(-11.56deg);pointer-events:none}
+html.v3 .v3-hero__note svg{position:absolute;left:-.75em;top:1.55em;width:.6em;height:1em;overflow:visible}
+html.v3 .tld-reel{position:absolute!important;right:30px;bottom:61px;top:auto;left:auto;z-index:2;width:clamp(200px,18.54vw,360px)!important;height:auto!important;max-width:none!important;margin:0!important;aspect-ratio:267/157.66!important;border-radius:5px!important}
+@media (hover:hover) and (pointer:fine){
+ html.v3 .tld-hero .tld-reel__cursor{position:absolute;top:50%;left:50%;opacity:1;transform:none!important}
+ html.v3 .tld-hero .tld-reel__ring{transform:scale(1.27)}
+ html.v3 .tld-hero .tld-reel.is-hover .tld-reel__ring{transform:scale(1.45)}
+}
+/* barre des stickers : verticale, fixe à droite */
+html.v3 .tld-collect-bar{left:auto;right:11.4px;top:236px;bottom:auto} /* colonne de 30 px calée à 30 px du bord (les slots tournés débordent de 19,4 px) */
+/* stickers à collectionner : nouvelles positions (centre et taille réelle relevés sur la maquette) */
+html.v3 .tld-collect.is-s1{--r:20.26deg;left:82.37%;top:683px;width:clamp(150px,19.48vw,281px)}
+html.v3 .tld-collect.is-s7{left:6.18%;top:1530px;width:clamp(80px,8.76vw,126px)}
+html.v3 .tld-services .tld-collect:not(.is-collected){opacity:.1}
+html.v3 .tld-collect.is-s4{left:75.16%;top:199px}
+html.v3 .tld-collect.is-s3{left:52.09%;top:126px}
+/* newsletter */
+html.v3 .tld-news{height:800px;background-color:#f43210}
+html.v3 .tld-news__star{top:170px}
+html.v3 .tld-news__side{top:386px}
+html.v3 .tld-news__form{margin-top:244px}
+html.v3 .tld-service__fill{background-color:#f43210}
+/* contact */
+html.v3 .tld-contact{height:800px;background-color:#2146ff}
+html.v3 .tld-contact__text{max-width:471px;font-size:30px}
+html.v3 .tld-contact__cta{display:inline-block;margin-top:76px;padding:8px 10px;background-color:#0c1016;font-family:Xmind,sans-serif;font-size:15px;font-weight:300;line-height:1.2;color:#f3efe9;text-decoration:none;transition:opacity .2s ease}
+html.v3 .tld-contact__cta:hover{opacity:.85}
+html.v3 .tld-contact__links{top:602px}
+/* footer */
+html.v3 .tld-footer__nav{margin-left:40px}
+html.v3 .tld-footer__cols{margin-right:40px}
 @media (max-width:991px){
- html.v3 .tld-hero__head{top:150px;left:30%;right:40px}
- html.v3 .tld-hero .tld-collect.is-s1{left:calc(40px - 30vw);width:clamp(120px,16vw,170px)}
- html.v3 .v3-hero__big{left:84px;font-size:14vw}
- html.v3 .tld-reel{right:40px;width:30vw!important}
+ html.v3 .tld-hero__head{left:auto;right:40px;width:300px;top:150px}
+ html.v3 .tld-nav__link.is-tr{left:220px}
 }
 @media (max-width:767px){
- html.v3 .tld-hero__head{top:120px;left:20px;right:20px}
- html.v3 .tld-hero__title{font-size:26px!important}
- html.v3 .tld-hero .tld-collect.is-s1{left:auto;right:-6px;top:calc(100% + 18px);width:130px}
- html.v3 .v3-hero__big{left:18px;bottom:76px;font-size:22vw}
- html.v3 .tld-reel{right:20px;bottom:calc(76px + 37vw + 22px);width:52vw!important}
+ html.v3 .tld-nav__link{font-size:12px}
+ html.v3 .tld-nav__link.is-tl{top:20px;left:20px}
+ html.v3 .tld-nav__link.is-bl{top:20px;left:84px}
+ html.v3 .tld-nav__link.is-tr{top:20px;left:154px}
+ html.v3 .tld-nav__link.is-br{top:20px;right:76px;bottom:auto}
+ html.v3 .tld-nav__link.is-vr{top:20px;right:20px}
+ html.v3 .tld-hero__head{left:20px;right:20px;width:auto;top:120px}
+ html.v3 .tld-hero__title{font-size:17px!important}
+ html.v3 .v3-hero__big{left:20px;top:auto;bottom:calc(20px + 30vw + 90px);font-size:16.5vw}
+ html.v3 .tld-reel{right:20px;bottom:70px;width:52vw!important}
+ html.v3 .tld-collect-bar{left:20px;right:auto;top:auto;bottom:20px}
+ html.v3 .tld-collect.is-s1{left:auto;right:10px;top:-40px;width:150px}
+ html.v3 .tld-news{height:auto}
+ html.v3 .tld-news__form{margin-top:32px}
+ html.v3 .tld-contact{height:auto}
+ html.v3 .tld-contact__text{font-size:22px}
+ html.v3 .tld-contact__cta{margin-top:40px}
+ html.v3 .tld-footer__nav{margin-left:0}
+ html.v3 .tld-footer__cols{margin-right:0}
 }

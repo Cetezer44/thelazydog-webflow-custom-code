@@ -55,7 +55,14 @@
   var big=[].slice.call(document.querySelectorAll('.v3-hero__in'));
   if(big.length&&!reduce){big.forEach(function(el){el.style.transform='translateY(130%)';});
     ready(function(){big.forEach(function(el,i){el.style.transform='';
-      el.animate([{transform:'translateY(130%)'},{transform:'none'}],{duration:1300,delay:120+i*110,easing:EXPO,fill:'backwards'});});});}
+      el.animate([{transform:'translateY(130%)'},{transform:'none'}],{duration:1100,delay:60+i*90,easing:EXPO,fill:'backwards'});});
+      /* masque relâché après l'entrée (le sticker et la note ne sont jamais coupés) */
+      setTimeout(function(){[].forEach.call(document.querySelectorAll('.v3-hero__l'),function(l){l.style.clipPath='none';});},60+big.length*90+1150);});}
+  /* « LAZY · DOG » : le trou est calé pour que le sticker soit centré entre les deux mots (comme sur la maquette) */
+  var gap=document.querySelector('.v3-hero__gap'),lazy=document.querySelector('.v3-hero__lazy');
+  function fitGap(){if(!gap||!lazy)return;var fs=parseFloat(getComputedStyle(gap).fontSize)||1,w=lazy.getBoundingClientRect().width/fs;
+    gap.parentNode.parentNode.parentNode.style.setProperty('--v3-gap',Math.max(.6,2*(3.044-w))+'em');}
+  if(gap){fitGap();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitGap);window.addEventListener('resize',fitGap);}
 
   /* 2. Projets : l'image se pose, cartes inclinées selon la vitesse ----------------------------- */
   var works=[].slice.call(document.querySelectorAll('.tld-work'));
