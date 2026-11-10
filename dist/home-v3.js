@@ -556,23 +556,39 @@
       });});
     });
   }
-  /* 1c. Hero : quand la section projets commence à arriver (son haut passe de 85 % à 40 % de l'écran),
-     le texte d'intro (h1) s'efface en fondu ; « THE LAZY DOG » et le showreel disparaissent derrière un masque
-     qui remonte du bas vers le haut. Tout revient en remontant. */
-  var fadeEls=[document.querySelector('.tld-hero__head')].filter(Boolean),
-      maskBig=document.querySelector('.v3-hero__big'),maskReel=document.querySelector('.tld-hero .tld-reel'),
-      sec2=document.querySelector('.tld-works'),fTick=false,fLast=-1;
-  function heroFade(){fTick=false;if(!sec2)return;var t=sec2.getBoundingClientRect().top/window.innerHeight,
-      k=Math.max(0,Math.min(1,(t-.4)/(.85-.4)));k=Math.round(k*1000)/1000;if(k===fLast)return;fLast=k;
-    var e=k*k*(3-2*k),h=1-e; /* adoucie aux deux bouts ; h = part masquée */
+  /* 1c. Hero à l'arrivée de la section projets :
+     - le texte d'intro (h1) s'efface en suivant le scroll ;
+     - « THE LAZY DOG » part d'un coup vers le haut (chaque mot sort par le haut de son masque, le sticker et la note
+       montent en s'effaçant), puis le showreel disparaît derrière un masque, avec un léger décalage.
+     Déclenché quand le haut des projets passe sous 70 % de l'écran ; tout revient quand on remonte (au-dessus de 78 %). */
+  var fadeEls=[document.querySelector('.tld-hero__head')].filter(Boolean),reelEl=document.querySelector('.tld-hero .tld-reel'),
+      sec2=document.querySelector('.tld-works'),fTick=false,fLast=-1,heroHidden=false,exitAnims=[];
+  function buildExit(){
+    exitAnims.forEach(function(a){a.cancel();});exitAnims=[];
+    bigL.forEach(function(l){l.style.clipPath='';}); /* on remet les masques de lignes pour que les mots en sortent */
+    var EX='cubic-bezier(.7,0,.2,1)';
+    words.forEach(function(w,i){exitAnims.push(w.animate([{transform:'translateY(0)'},{transform:'translateY(-130%)'}],{duration:760,delay:i*80,easing:EX,fill:'both'}));});
+    [hs,hn].forEach(function(el,i){if(!el)return;var op=getComputedStyle(el).opacity;
+      exitAnims.push(el.animate([{opacity:op,translate:'0 0'},{opacity:0,translate:'0 -70px'}],{duration:640,delay:100+i*60,easing:EX,fill:'both'}));});
+    if(reelEl)exitAnims.push(reelEl.animate([{clipPath:'inset(0% 0% 0% 0% round 5px)',translate:'0 0'},{clipPath:'inset(0% 0% 100% 0% round 5px)',translate:'0 -24px'}],{duration:760,delay:300,easing:EX,fill:'both'}));
+  }
+  function setHeroHidden(h){
+    if(h===heroHidden)return;heroHidden=h;
+    if(reduce){[document.querySelector('.v3-hero__big'),reelEl].forEach(function(el){if(el){el.style.transition='opacity .3s';el.style.opacity=h?'0':'';}});return;}
+    if(h){if(!exitAnims.length)buildExit();exitAnims.forEach(function(a){a.playbackRate=1;a.play();});}
+    else{exitAnims.forEach(function(a){a.playbackRate=-1;a.play();});
+      Promise.all(exitAnims.map(function(a){return a.finished;})).then(function(){
+        if(heroHidden)return;exitAnims.forEach(function(a){a.cancel();});exitAnims=[];bigL.forEach(function(l){l.style.clipPath='none';});});}
+  }
+  function heroScroll(){fTick=false;if(!sec2)return;var t=sec2.getBoundingClientRect().top/window.innerHeight;
+    if(t<.7)setHeroHidden(true);else if(t>.78)setHeroHidden(false);
+    var k=Math.max(0,Math.min(1,(t-.4)/(.85-.4)));k=Math.round(k*1000)/1000;if(k===fLast)return;fLast=k;
+    var e=k*k*(3-2*k);
     fadeEls.forEach(function(el){if(k>=1){el.style.opacity='';el.style.translate='';el.style.visibility='';return;}
       el.style.opacity=e.toFixed(3);el.style.translate=reduce?'':'0 '+((1-e)*-24).toFixed(1)+'px';el.style.visibility=k<=0?'hidden':'';});
-    /* le titre déborde un peu de sa boîte (sticker, note, jambages) : le masque part de -30 % et va jusqu'à 135 % */
-    if(maskBig)maskBig.style.clipPath=k>=1?'':'inset(-30% -10% '+(-10+h*145).toFixed(2)+'% -10%)';
-    if(maskReel)maskReel.style.clipPath=k>=1?'':'inset(0 0 '+(h*100).toFixed(2)+'% 0 round 5px)';
   }
-  if(sec2){window.addEventListener('scroll',function(){if(!fTick){fTick=true;requestAnimationFrame(heroFade);}},{passive:true});
-    window.addEventListener('resize',heroFade);heroFade();}
+  if(sec2){window.addEventListener('scroll',function(){if(!fTick){fTick=true;requestAnimationFrame(heroScroll);}},{passive:true});
+    window.addEventListener('resize',heroScroll);heroScroll();}
 
   /* « LAZY · DOG » : le trou est calé pour que le sticker soit centré entre les deux mots (comme sur la maquette) */
   var gap=document.querySelector('.v3-hero__gap'),lazy=document.querySelector('.v3-hero__lazy');
