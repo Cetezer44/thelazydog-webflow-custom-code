@@ -484,8 +484,9 @@
     if(!('IntersectionObserver' in window)){els.forEach(fn);return;}
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.unobserve(e.target);fn(e.target);}});},{rootMargin:margin||'0px 0px -10% 0px'});
     els.forEach(function(el){io.observe(el);});}
-  function ready(fn){if(!root.classList.contains('tld-loading')){fn();return;}
-    window.addEventListener('tld:loaded',function h(){window.removeEventListener('tld:loaded',h);fn();});setTimeout(fn,9000);}
+  function ready(fn){var done=false;function go(){if(done)return;done=true;fn();} /* une seule fois (événement du loader ou filet de sécurité) */
+    if(!root.classList.contains('tld-loading')){go();return;}
+    window.addEventListener('tld:loaded',function h(){window.removeEventListener('tld:loaded',h);go();});setTimeout(go,9000);}
 
   /* 1. Lignes derrière un masque ------------------------------------------------------------- */
   var LINE_SEL='[data-v3-lines],.tld-works__text,.tld-services__text,.tld-news__title,.tld-news__text,.tld-contact__text,.tld-contact__link';
@@ -532,22 +533,27 @@
     words.forEach(function(w){w.style.transform='translateY(130%)';});
     if(hs)hs.style.opacity='0';if(hn)hn.style.opacity='0';
     hp.forEach(function(pa){pa.setAttribute('pathLength','1');pa.style.strokeDasharray='1';pa.style.strokeDashoffset='1';});
-    var SOFT='cubic-bezier(.22,1,.36,1)';
-    function rise(w,t){if(!w)return;setTimeout(function(){w.style.transform='';},t);
-      w.animate([{transform:'translateY(130%)'},{transform:'none'}],{duration:1300,delay:t,easing:EXPO,fill:'backwards'});}
-    ready(function(){
-      var T={the:80,lazy:330,stk:1000,note:1450,arrow:1800,press:2750,click:2950};
+    var SOFT='cubic-bezier(.22,1,.36,1)',RISE='cubic-bezier(.16,1,.3,1)';
+    words.forEach(function(w){w.style.willChange='transform';});
+    /* chaque élément part de son état caché grâce à fill:'backwards' pendant son délai : aucun style modifié en cours de route */
+    function rise(w,t){if(!w)return;w.style.transform='';
+      w.animate([{transform:'translateY(115%)'},{transform:'translateY(0)'}],{duration:1150,delay:t,easing:RISE,fill:'backwards'})
+       .onfinish=function(){w.style.willChange='';};}
+    ready(function(){fitGap(); /* trou calé avant le départ : DOG ne bouge plus ensuite */
+      requestAnimationFrame(function(){requestAnimationFrame(function(){ /* laisse le loader se retirer avant de démarrer */
+      var T={the:0,lazy:180,stk:760,note:1060,arrow:1320,press:2350,click:2520};
       rise(wThe,T.the);rise(wLazy,T.lazy);
-      if(hs){setTimeout(function(){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
-        hs.animate([{opacity:0,scale:'.8'},{opacity:op,scale:'1'}],{duration:1000,easing:SOFT,fill:'backwards'});},T.stk);}
-      if(hn){setTimeout(function(){hn.style.opacity='';},T.note);hn.animate([{opacity:0,translate:'0 8px'},{opacity:1,translate:'0 0'}],{duration:1000,delay:T.note,easing:SOFT,fill:'backwards'});}
-      hp.forEach(function(pa,i){pa.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:700,delay:T.arrow+i*300,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'});});
+      if(hs){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
+        hs.animate([{opacity:0,scale:'.85'},{opacity:op,scale:'1'}],{duration:900,delay:T.stk,easing:SOFT,fill:'backwards'});}
+      if(hn){hn.style.opacity='';hn.animate([{opacity:0,translate:'0 6px'},{opacity:1,translate:'0 0'}],{duration:800,delay:T.note,easing:SOFT,fill:'backwards'});}
+      hp.forEach(function(pa,i){pa.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:520,delay:T.arrow+i*260,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'});});
       /* clic simulé : petite pression, puis collecte (couleur + envol vers la barre) ; DOG monte en même temps */
-      if(hs){setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.animate([{scale:'1'},{scale:'.9'},{scale:'1'}],{duration:260,easing:'ease-out'});},T.press);
+      if(hs){setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.animate([{scale:'1'},{scale:'.92',offset:.45},{scale:'1'}],{duration:240,easing:'ease-in-out'});},T.press);
         setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.click();},T.click);}
       rise(wDog,T.click);
       /* masques relâchés une fois tout en place (le sticker et la note ne sont jamais coupés) */
-      setTimeout(function(){bigL.forEach(function(l){l.style.clipPath='none';});},T.click+1400);
+      setTimeout(function(){bigL.forEach(function(l){l.style.clipPath='none';});},T.click+1250);
+      });});
     });
   }
   /* « LAZY · DOG » : le trou est calé pour que le sticker soit centré entre les deux mots (comme sur la maquette) */
