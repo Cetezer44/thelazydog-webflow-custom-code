@@ -13,8 +13,8 @@
   /* version rapide (Accueil v3 : <html data-loader-fast>) : pas de pile de stickers, timings ~40 % plus courts, courbes plus nerveuses */
   var FAST=root.hasAttribute('data-loader-fast');
   var E={pop:'cubic-bezier(.34,1.7,.5,1)',move:'cubic-bezier(.77,0,.18,1)',spread:'cubic-bezier(.2,1.45,.35,1)',snap:'cubic-bezier(.8,-0.35,.2,1.35)',out:'cubic-bezier(.55,0,.85,.3)',fly:'cubic-bezier(.7,0,.15,1)'};
-  if(FAST){E.spread='cubic-bezier(.25,1.75,.4,1)';E.snap='cubic-bezier(.9,-0.45,.1,1.45)';E.out='cubic-bezier(.7,0,.84,0)';}
-  var T=FAST?{mask:520,mStag:70,s1:560,d1:430,s2:1000,d2:330,t5:1440,fly:360,fStag:16,eyeAt:300,eye:360,bgAt:560,bg:280,end:700,rv:.7}:{mask:820,mStag:140,s1:1350,d1:720,s2:2150,d2:540,t5:2850,fly:520,fStag:28,eyeAt:560,eye:520,bgAt:960,bg:420,end:1180,rv:1};
+  if(FAST){E.spread='cubic-bezier(.22,1.25,.36,1)';E.snap='cubic-bezier(.65,-0.15,.25,1.15)';E.out='cubic-bezier(.55,0,.75,.2)';}
+  var T=FAST?{mask:680,mStag:90,s1:680,d1:560,s2:1240,d2:460,t5:1760,fly:460,fStag:20,eyeAt:360,eye:460,bgAt:680,bg:420,end:900,rv:.85}:{mask:820,mStag:140,s1:1350,d1:720,s2:2150,d2:540,t5:2850,fly:520,fStag:28,eyeAt:560,eye:520,bgAt:960,bg:420,end:1180,rv:1};
   var L={};[].forEach.call(stage.querySelectorAll('[data-l]'),function(el){L[el.getAttribute('data-l')]={el:el,x:0,y:0,r:0,s:1,o:0};});
   /* positions (px, depuis le centre de l'écran) relevées sur les frames Figma 1440×900 : [x, y, rotation] */
   var S=[
@@ -52,7 +52,7 @@
       l.forEach(function(node,k){if(k)i.appendChild(document.createTextNode(' '));i.appendChild(node);});o.appendChild(i);h.appendChild(o);return i;})};
   }
   function reveal(){ /* entrée de la page : œil qui s'ouvre, h1 ligne par ligne, navigation depuis chaque bord */
-    if(eye){eye.animate([{transform:'scale(0) rotate(-120deg)'},{transform:'scale(1.12) rotate(8deg)',offset:.7},{transform:'none'}],{duration:720*T.rv,delay:60,easing:'cubic-bezier(.2,.9,.3,1)',fill:'backwards'});}
+    if(eye){eye.animate([{transform:'scale(0) rotate(-120deg)'},{transform:FAST?'scale(1.05) rotate(4deg)':'scale(1.12) rotate(8deg)',offset:.7},{transform:'none'}],{duration:720*T.rv,delay:60,easing:'cubic-bezier(.2,.9,.3,1)',fill:'backwards'});}
     var h=document.querySelector('.tld-hero__title'),last=0;
     if(h){var sp=splitLines(h);sp.inners.forEach(function(el,i){last=i;
       el.animate([{transform:'translateY(110%)'},{transform:'translateY(0)'}],{duration:1000*T.rv,delay:(160+i*130)*T.rv,easing:OUT,fill:'backwards'});});
@@ -111,7 +111,7 @@
   ALL.forEach(function(id,i){if(id==='o')return;var p=L[id];
     to(id,{x:p.x*1.35+rnd(-20,20),y:p.y+rnd(40,90),r:p.r+rnd(-70,70),s:.2,o:0},T.fly,t5+i*T.fStag,E.out);});
   /* l'œil disparaît en scale (avec une petite anticipation)… */
-  L.o.el.animate([{transform:tf(L.o)},{transform:tf({x:L.o.x,y:L.o.y,r:0,s:1.18}),offset:.35},{transform:tf({x:L.o.x,y:L.o.y,r:90,s:0})}],{duration:T.eye,delay:t5+T.eyeAt,easing:FAST?'cubic-bezier(.6,-0.3,.8,0)':'cubic-bezier(.5,0,.75,0)',fill:'forwards'});
+  L.o.el.animate([{transform:tf(L.o)},{transform:tf({x:L.o.x,y:L.o.y,r:0,s:1.18}),offset:.35},{transform:tf({x:L.o.x,y:L.o.y,r:90,s:0})}],{duration:T.eye,delay:t5+T.eyeAt,easing:FAST?'cubic-bezier(.5,-0.1,.75,0)':'cubic-bezier(.5,0,.75,0)',fill:'forwards'});
   bg.animate([{opacity:1},{opacity:0}],{duration:T.bg,delay:t5+T.bgAt,easing:'ease',fill:'forwards'});
   /* …et réapparaît en scale dans le header (dans reveal) */
   setTimeout(finish,t5+T.end);

@@ -43,7 +43,7 @@
       lineEls.forEach(function(el){el._v3in=split(el);el._v3in.forEach(function(l){l.style.transform='translateY(110%)';});});
       root.classList.remove('v3-pre'); /* les textes étaient masqués en attendant le découpage (pas de saut) */
       inView(lineEls,function(el){el._v3done=true;(el._v3in||[]).forEach(function(l,i){l.style.transform='';
-        l.animate([{transform:'translateY(110%)'},{transform:'none'}],{duration:1000,delay:i*80,easing:EXPO,fill:'backwards'});});});
+        l.animate([{transform:'translateY(110%)'},{transform:'none'}],{duration:1200,delay:i*100,easing:EXPO,fill:'backwards'});});});
     };
     if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);else go();
     /* au redimensionnement, on rend le texte d'origine (les lignes ne correspondent plus) */
@@ -51,13 +51,24 @@
       lineEls.forEach(function(el){if(el._v3html!=null&&el._v3done){el.innerHTML=el._v3html;}});});
   }
 
+  /* 1a. Hero : sticker entre « LAZY » et « DOG », note manuscrite et flèche — apparition douce après le titre */
+  var hs=document.querySelector('.v3-hero__big .tld-collect'),hn=document.querySelector('.v3-hero__note'),hp=hn?[].slice.call(hn.querySelectorAll('path')):[];
+  if(!reduce){if(hs)hs.style.opacity='0';if(hn)hn.style.opacity='0';
+    hp.forEach(function(pa){pa.setAttribute('pathLength','1');pa.style.strokeDasharray='1';pa.style.strokeDashoffset='1';});}
+  function heroExtras(t){if(reduce)return;
+    if(hs){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
+      hs.animate([{opacity:0,scale:'.8'},{opacity:op,scale:'1'}],{duration:1400,delay:t,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});}
+    if(hn){hn.style.opacity='';hn.animate([{opacity:0,translate:'0 8px'},{opacity:1,translate:'0 0'}],{duration:1200,delay:t+750,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});}
+    hp.forEach(function(pa,i){pa.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:900,delay:t+1150+i*350,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'});});}
+
   /* 1b. Hero : le titre géant monte ligne par ligne une fois l'intro terminée --------------------- */
   var big=[].slice.call(document.querySelectorAll('.v3-hero__in'));
   if(big.length&&!reduce){big.forEach(function(el){el.style.transform='translateY(130%)';});
     ready(function(){big.forEach(function(el,i){el.style.transform='';
-      el.animate([{transform:'translateY(130%)'},{transform:'none'}],{duration:1100,delay:60+i*90,easing:EXPO,fill:'backwards'});});
+      el.animate([{transform:'translateY(130%)'},{transform:'none'}],{duration:1400,delay:80+i*130,easing:EXPO,fill:'backwards'});});
+      heroExtras(80+big.length*130+500);
       /* masque relâché après l'entrée (le sticker et la note ne sont jamais coupés) */
-      setTimeout(function(){[].forEach.call(document.querySelectorAll('.v3-hero__l'),function(l){l.style.clipPath='none';});},60+big.length*90+1150);});}
+      setTimeout(function(){[].forEach.call(document.querySelectorAll('.v3-hero__l'),function(l){l.style.clipPath='none';});},80+big.length*130+1450);});}
   /* « LAZY · DOG » : le trou est calé pour que le sticker soit centré entre les deux mots (comme sur la maquette) */
   var gap=document.querySelector('.v3-hero__gap'),lazy=document.querySelector('.v3-hero__lazy');
   function fitGap(){if(!gap||!lazy)return;var fs=parseFloat(getComputedStyle(gap).fontSize)||1,w=lazy.getBoundingClientRect().width/fs;
@@ -68,14 +79,14 @@
   var works=[].slice.call(document.querySelectorAll('.tld-work'));
   if(!reduce){
     var imgs=works.map(function(w){return w.querySelector('.tld-work__img');}).filter(Boolean);
-    imgs.forEach(function(im){im.style.scale='1.18';});
+    imgs.forEach(function(im){im.style.scale='1.1';});
     inView(imgs.map(function(im){return im.closest('.tld-work__media')||im;}),function(m){var im=m.querySelector('.tld-work__img')||m;
-      im.style.scale='';im.animate([{scale:'1.18'},{scale:'1'}],{duration:1600,easing:EXPO,fill:'backwards'});},'0px 0px -15% 0px');
+      im.style.scale='';im.animate([{scale:'1.1'},{scale:'1'}],{duration:1900,easing:EXPO,fill:'backwards'});},'0px 0px -15% 0px');
     if(works.length){
       var lastY=window.scrollY,lastT=performance.now(),skew=0,target=0,raf=null;
       var loop=function(){raf=null;var now=performance.now();
         var v=window.tldLenis&&typeof window.tldLenis.velocity==='number'?window.tldLenis.velocity:(window.scrollY-lastY)/Math.max(1,now-lastT)*16;
-        lastY=window.scrollY;lastT=now;target=Math.max(-3,Math.min(3,v*.12));skew+=(target-skew)*.12;
+        lastY=window.scrollY;lastT=now;target=Math.max(-1.5,Math.min(1.5,v*.07));skew+=(target-skew)*.08;
         if(Math.abs(skew)<.01&&Math.abs(target)<.01){skew=0;works.forEach(function(w){w.style.transform='';});return;}
         var s='skewY('+skew.toFixed(3)+'deg)';works.forEach(function(w){w.style.transform=s;});raf=requestAnimationFrame(loop);};
       window.addEventListener('scroll',function(){if(!raf)raf=requestAnimationFrame(loop);},{passive:true});
@@ -107,7 +118,7 @@
       inView([logo],function(){letters.forEach(function(l,i){l.style.transform='';l.style.clipPath='';
         l.animate([HID,{transform:'translateY(0)',clipPath:'inset(0 0 0% 0)'}],{duration:1100,delay:i*55,easing:EXPO,fill:'backwards'});});},'0px 0px -5% 0px');}
     if(fine&&!reduce)letters.forEach(function(l,i){var eye=i===8,busy=false;l.addEventListener('pointerenter',function(){if(busy)return;busy=true;
-      var a=l.animate(eye?[{rotate:'0deg'},{rotate:'360deg'}]:[{translate:'0 0'},{translate:'0 -14%'},{translate:'0 0'}],{duration:eye?700:480,easing:eye?OUT:'cubic-bezier(.34,1.56,.64,1)'});a.onfinish=function(){busy=false;};});});
+      var a=l.animate(eye?[{rotate:'0deg'},{rotate:'360deg'}]:[{translate:'0 0'},{translate:'0 -9%'},{translate:'0 0'}],{duration:eye?900:620,easing:eye?OUT:'cubic-bezier(.33,1.25,.6,1)'});a.onfinish=function(){busy=false;};});});
   }
 
   /* 6. Liens textes : au survol, les lettres partent vers le haut et reviennent par le bas, en léger décalage.
