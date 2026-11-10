@@ -205,14 +205,22 @@
     fin.animate([{opacity:0},{opacity:1}],{duration:reduce?1:450,easing:'ease',fill:'forwards'});
     if(!reduce)[].forEach.call(title.querySelectorAll('.tld-collect-final__line'),function(l,i){
       l.animate([{opacity:0,transform:'translateY(40%)'},{opacity:1,transform:'none'}],{duration:700,delay:150+i*90,easing:'cubic-bezier(.16,1,.3,1)',fill:'backwards'});});
+    /* chaque sticker « tombe » sur l'écran : chute qui accélère jusqu'à l'impact (IMP de la durée), puis rebond.
+       Le tremblement et le compteur sont calés exactement sur l'impact (même horloge que l'animation, pas de minuteur). */
+    var DUR=560,IMP=.42;
     list.forEach(function(el,i){
       var d=reduce?0:750+i*320,r=(i%2?1:-1)*(10+Math.random()*10),b=el._base||'';
-      var a=el.animate([{opacity:0,transform:b+' scale(2.8) rotate('+r*2+'deg)'},{opacity:1,transform:b+' scale(.86) rotate('+(-r*.4)+'deg)',offset:.55},{opacity:1,transform:b+' scale(1.06) rotate('+(r*.15)+'deg)',offset:.8},{opacity:1,transform:b+' scale(1)'}],{duration:reduce?1:500,delay:d,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'});
+      el.animate([
+        {opacity:0,transform:b+' scale(2.8) rotate('+r*2+'deg)',easing:'cubic-bezier(.55,0,.9,.45)'},
+        {opacity:1,transform:b+' scale(.86) rotate('+(-r*.4)+'deg)',offset:IMP,easing:'cubic-bezier(.2,.7,.3,1)'},
+        {opacity:1,transform:b+' scale(1.06) rotate('+(r*.15)+'deg)',offset:.74,easing:'cubic-bezier(.4,0,.3,1)'},
+        {opacity:1,transform:b+' scale(1)'}],{duration:reduce?1:DUR,delay:d,easing:'linear',fill:'forwards'});
       if(reduce){el.style.opacity='1';return;}
-      setTimeout(function(){ /* impact : le compteur avance, l'écran tremble un peu */
-        if(count){count.textContent=(i+1)+'/'+n;count.animate([{transform:'scale(1.35)'},{transform:'scale(1)'}],{duration:260,easing:'cubic-bezier(.34,1.6,.5,1)'});}
-        fin.animate([{transform:'translate(0,0)'},{transform:'translate('+(Math.random()*10-5)+'px,'+(Math.random()*10-5)+'px)'},{transform:'translate(0,0)'}],{duration:150});
-      },d+260);
+      var hit=d+DUR*IMP,x=(i%2?1:-1)*(4+Math.random()*3),y=(Math.random()*6-3);
+      fin.animate([{transform:'translate(0,0)'},{transform:'translate('+x+'px,'+y+'px)',offset:.25},{transform:'translate('+(-x*.5)+'px,'+(-y*.5)+'px)',offset:.6},{transform:'translate(0,0)'}],
+        {duration:240,delay:hit,easing:'ease-out'});
+      if(count){count.animate([{transform:'scale(1)'},{transform:'scale(1.35)',offset:.2},{transform:'scale(1)'}],{duration:320,delay:hit,easing:'cubic-bezier(.3,0,.3,1)'});
+        setTimeout(function(){count.textContent=(i+1)+'/'+n;},hit);}
     });
     setTimeout(function(){fin.classList.add('is-done');},reduce?0:750+n*320+400);
   }
