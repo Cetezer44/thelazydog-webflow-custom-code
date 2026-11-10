@@ -57,12 +57,12 @@ html.v3 .tld-nav__link.is-br{right:122px}
 html.v3 .tld-nav__link.is-vr{top:30px;right:30px;bottom:auto;left:auto;writing-mode:horizontal-tb;transform:none}
 /* hero : texte d'intro en haut à droite, « THE LAZY DOG » géant, showreel en vignette */
 html.v3 .tld-hero{height:100vh;height:100svh;min-height:720px;padding:0!important;overflow:clip}
-html.v3 .tld-hero__head{position:absolute;top:236px;left:calc(50% + 170px);width:322px;max-width:none!important;margin:0!important}
+html.v3 .tld-hero__head{position:absolute;top:314px;left:50%;width:322px;max-width:none!important;margin:0!important}
 html.v3 .tld-hero__title{max-width:none!important;margin:0;font-size:18px!important;font-weight:300!important;line-height:1.2;letter-spacing:0;text-align:left!important;text-indent:0!important;color:#0c1016!important;mix-blend-mode:normal!important;--indent:0}
 html.v3 .tld-hero__title .tld-line:first-child{text-indent:0}
 html.v3 .tld-hero__title strong{font-weight:300}
 html.v3 .tld-hero__title .tld-sr{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;white-space:normal!important}
-html.v3 .v3-hero__big{position:absolute;left:6.945vw;top:43.8%;z-index:1;margin:0;font-family:Xmind,"Instrument Sans",Arial,sans-serif;font-size:10.417vw;font-weight:600;line-height:1;letter-spacing:0;text-transform:uppercase;color:#0c1016;white-space:nowrap}
+html.v3 .v3-hero__big{position:absolute;left:3.472vw;top:auto;bottom:42px;z-index:1;margin:0;font-family:Xmind,"Instrument Sans",Arial,sans-serif;font-size:10.417vw;font-weight:600;line-height:1;letter-spacing:0;text-transform:uppercase;color:#0c1016;white-space:nowrap}
 html.v3 .v3-hero__l{display:block;clip-path:inset(-.15em -.3em -.2em -.1em)}
 html.v3 .v3-hero__in{display:inline-block}
 html.v3 .v3-hero__gap{display:inline-block;width:var(--v3-gap,1.1em)}
@@ -100,7 +100,7 @@ html.v3 .tld-contact__links{top:602px}
 html.v3 .tld-footer__nav{margin-left:40px}
 html.v3 .tld-footer__cols{margin-right:40px}
 @media (max-width:991px){
- html.v3 .tld-hero__head{left:auto;right:40px;width:300px;top:150px}
+ html.v3 .tld-hero__head{left:auto;right:40px;width:300px;top:180px}
  html.v3 .tld-nav__link.is-tr{left:220px}
 }
 @media (max-width:767px){
@@ -127,3 +127,5 @@ html.v3 .tld-footer__cols{margin-right:40px}
 }
 /* fondus de fond noir → rouge → bleu → noir : les sections laissent voir la couleur du body (pilotée par bg-fade.js) */
 html.v3 .tld-news,html.v3 .tld-contact,html.v3 .tld-footer{background-color:transparent}
+/* garde-fou : un éventuel doublon du sticker n°6 resté dans la section projets est masqué (le n°6 vit dans le hero) */
+html.v3 .tld-works>.tld-collect.is-s6{display:none!important}
