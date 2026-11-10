@@ -88,6 +88,18 @@
       });});
     });
   }
+  /* 1c. Hero : le texte d'intro (h1) et le showreel s'effacent quand la section projets commence à arriver
+     (visibles tant que son haut est sous 85 % de l'écran, invisibles à 40 %), avec une légère remontée. */
+  var fadeEls=[document.querySelector('.tld-hero__head'),document.querySelector('.tld-hero .tld-reel')].filter(Boolean),
+      sec2=document.querySelector('.tld-works'),fTick=false,fLast=-1;
+  function heroFade(){fTick=false;if(!sec2)return;var t=sec2.getBoundingClientRect().top/window.innerHeight,
+      k=Math.max(0,Math.min(1,(t-.4)/(.85-.4)));k=Math.round(k*1000)/1000;if(k===fLast)return;fLast=k;
+    var e=k*k*(3-2*k); /* adoucie aux deux bouts */
+    fadeEls.forEach(function(el){if(k>=1){el.style.opacity='';el.style.translate='';el.style.visibility='';return;}
+      el.style.opacity=e.toFixed(3);el.style.translate=reduce?'':'0 '+((1-e)*-24).toFixed(1)+'px';el.style.visibility=k<=0?'hidden':'';});}
+  if(fadeEls.length&&sec2){window.addEventListener('scroll',function(){if(!fTick){fTick=true;requestAnimationFrame(heroFade);}},{passive:true});
+    window.addEventListener('resize',heroFade);heroFade();}
+
   /* « LAZY · DOG » : le trou est calé pour que le sticker soit centré entre les deux mots (comme sur la maquette) */
   var gap=document.querySelector('.v3-hero__gap'),lazy=document.querySelector('.v3-hero__lazy');
   function fitGap(){if(!gap||!lazy)return;var fs=parseFloat(getComputedStyle(gap).fontSize)||1,w=lazy.getBoundingClientRect().width/fs;
