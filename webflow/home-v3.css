@@ -89,6 +89,7 @@ html.v3 .tld-news{height:800px;background-color:#f43210}
 html.v3 .tld-news__star{top:170px}
 html.v3 .tld-news__side{top:386px}
 html.v3 .tld-news__form{margin-top:244px}
+html.v3 .tld-news__form{max-width:512px}
 html.v3 .tld-service__fill{background-color:#f43210}
 /* contact */
 html.v3 .tld-contact{height:800px;background-color:#2146ff}
@@ -129,3 +130,5 @@ html.v3 .tld-footer__cols{margin-right:40px}
 html.v3 .tld-news,html.v3 .tld-contact,html.v3 .tld-footer{background-color:transparent}
 /* garde-fou : un éventuel doublon du sticker n°6 resté dans la section projets est masqué (le n°6 vit dans le hero) */
 html.v3 .tld-works>.tld-collect.is-s6{display:none!important}
+/* projets : le 4e projet descend (maquette du 10 nov. : 302 px sous le haut du 3e, soit 24,35 % de la largeur utile) */
+@media (min-width:768px){html.v3 .tld-works__item:nth-child(4){margin-top:49.27%}}
