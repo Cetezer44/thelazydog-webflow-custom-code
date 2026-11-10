@@ -84,3 +84,6 @@ html.v3 .tld-footer>.tld-collect.is-s3{display:none!important}
 html.v3 .tld-service__fill{clip-path:inset(0 0 0 0);transition:clip-path .6s cubic-bezier(.65,0,.35,1)}
 html.v3 .tld-services.is-hovering .tld-service:not(.is-hover) .tld-service__fill{opacity:1;clip-path:inset(100% 0 0 0);transition-duration:.5s}
 @media (prefers-reduced-motion:reduce){html.v3 .tld-service__fill{transition:none}}
+/* services : la vidéo de fond (créée par services.js) couvre toute la section noire, recadrée au centre */
+html.v3 .tld-services__bg{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden}
+html.v3 .tld-services__bg video{position:absolute;top:0;left:0;width:100%!important;height:100%!important;max-width:none;object-fit:cover;object-position:50% 50%}
