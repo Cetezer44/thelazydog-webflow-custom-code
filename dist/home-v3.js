@@ -601,9 +601,10 @@
      - le texte d'intro (h1) s'efface en suivant le scroll ;
      - « THE LAZY DOG » part d'un coup vers le haut (chaque mot sort par le haut de son masque, le sticker et la note
        montent en s'effaçant), puis le showreel disparaît derrière un masque, avec un léger décalage.
-     Déclenché quand le haut des projets passe sous 40 % de l'écran ; tout revient, plus vite, dès qu'il repasse au-dessus de 46 %. */
+     Déclenché en descendant quand le haut des projets passe sous 40 % de l'écran ; tout revient, plus vite, dès qu'on remonte
+     et que le bas du hero réapparaît (ou au-dessus de 50 %). */
   var fadeEls=[document.querySelector('.tld-hero__head')].filter(Boolean),reelEl=document.querySelector('.tld-hero .tld-reel'),
-      sec2=document.querySelector('.tld-works'),fTick=false,fLast=-1,heroHidden=false,exitAnims=[];
+      sec2=document.querySelector('.tld-works'),fTick=false,fLast=-1,heroHidden=false,exitAnims=[],heroLastY=window.scrollY||0;
   function buildExit(){
     exitAnims.forEach(function(a){a.cancel();});exitAnims=[];
     bigL.forEach(function(l){l.style.clipPath='';}); /* on remet les masques de lignes pour que les mots en sortent */
@@ -622,8 +623,10 @@
         if(heroHidden)return;exitAnims.forEach(function(a){a.cancel();});exitAnims=[];bigL.forEach(function(l){l.style.clipPath='none';});});}
   }
   function heroScroll(){fTick=false;if(!sec2)return;var t=sec2.getBoundingClientRect().top/window.innerHeight;
-    /* le hero part quand il est déjà à moitié sorti de l'écran, et revient dès qu'on remonte un peu (petit écart anti-clignotement) */
-    if(t<.4)setHeroHidden(true);else if(t>.46)setHeroHidden(false);
+    /* sortie en descendant, quand le hero est à moitié sorti (projets à 40 % de l'écran) ;
+       retour dès qu'on remonte et que le bas du hero (là où est le titre) revient à l'écran — plus de zone vide */
+    var y=window.scrollY||window.pageYOffset,dir=y<heroLastY?-1:(y>heroLastY?1:0);heroLastY=y;
+    if(t<.4&&dir>=0)setHeroHidden(true);else if((dir<0&&t>.12)||t>.5)setHeroHidden(false);
     var k=Math.max(0,Math.min(1,(t-.4)/(.85-.4)));k=Math.round(k*1000)/1000;if(k===fLast)return;fLast=k;
     var e=k*k*(3-2*k);
     fadeEls.forEach(function(el){if(k>=1){el.style.opacity='';el.style.translate='';el.style.visibility='';return;}
