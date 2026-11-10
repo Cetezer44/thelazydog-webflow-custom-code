@@ -5,6 +5,7 @@
 (function(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   var frames=[].slice.call(document.querySelectorAll('[data-parallax],.tld-work__media')).map(function(el){
+    if(el.hasAttribute('data-parallax-off'))return null; /* vignette sans parallax (ex. vidéos des projets en v3) */
     var img=el.querySelector('video')||el.querySelector('img');if(img&&img.closest('.tld-work__hover'))img=null;if(!img)return null; /* vidéo du projet (work-video.js) ou image */
     var a=parseFloat(el.getAttribute('data-parallax'));if(!(a>0))a=el.hasAttribute('data-parallax')?.12:.07; /* projets : parallax léger */
     img.style.position='absolute';img.style.left='0';img.style.width='100%';img.style.maxWidth='none';
