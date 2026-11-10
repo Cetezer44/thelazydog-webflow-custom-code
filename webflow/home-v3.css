@@ -131,3 +131,8 @@ html.v3 .tld-news,html.v3 .tld-contact,html.v3 .tld-footer{background-color:tran
 html.v3 .tld-works>.tld-collect.is-s6{display:none!important}
 /* projets : le 4e projet descend (maquette du 10 nov. : 302 px sous le haut du 3e, soit 24,35 % de la largeur utile) */
 @media (min-width:768px){html.v3 .tld-works__item:nth-child(4){margin-top:49.27%}}
+/* services au survol : les autres colonnes rouges se retirent de haut en bas (masque), puis se reconstruisent de bas en haut
+   à la sortie ; la colonne survolée monte déjà de bas en haut (services.js) */
+html.v3 .tld-service__fill{clip-path:inset(0 0 0 0);transition:clip-path .6s cubic-bezier(.65,0,.35,1)}
+html.v3 .tld-services.is-hovering .tld-service:not(.is-hover) .tld-service__fill{opacity:1;clip-path:inset(100% 0 0 0);transition-duration:.5s}
+@media (prefers-reduced-motion:reduce){html.v3 .tld-service__fill{transition:none}}
