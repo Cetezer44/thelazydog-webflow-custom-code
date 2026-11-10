@@ -53,8 +53,8 @@
   }
 
   /* 1a. Hero « THE / LAZY · DOG » : chorégraphie après le loader
-     1. THE  2. LAZY  3. le sticker, puis la note et la flèche  4. clic simulé : le sticker prend sa couleur et file
-     dans la collection, et DOG monte au même moment. Chaque mot monte derrière le masque de sa ligne. */
+     1. THE  2. LAZY  3. le sticker, puis la note et la flèche  4. DOG  5. clic simulé : le sticker prend sa couleur et file
+     dans la collection. Chaque mot monte derrière le masque de sa ligne. */
   var bigL=[].slice.call(document.querySelectorAll('.v3-hero__l')),hs=document.querySelector('.v3-hero__big .tld-collect'),
       hn=document.querySelector('.v3-hero__note'),hp=hn?[].slice.call(hn.querySelectorAll('path')):[],
       wThe=document.querySelector('.v3-hero__l:first-child .v3-hero__in'),wLazy=document.querySelector('.v3-hero__lazy'),wDog=null;
@@ -73,18 +73,18 @@
        .onfinish=function(){w.style.willChange='';};}
     ready(function(){fitGap(); /* trou calé avant le départ : DOG ne bouge plus ensuite */
       requestAnimationFrame(function(){requestAnimationFrame(function(){ /* laisse le loader se retirer avant de démarrer */
-      var T={the:0,lazy:180,stk:760,note:1060,arrow:1320,press:2350,click:2520};
+      var T={the:0,lazy:180,stk:760,note:1060,arrow:1320,dog:1650,press:2600,click:2780};
       rise(wThe,T.the);rise(wLazy,T.lazy);
       if(hs){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
         hs.animate([{opacity:0,scale:'.85'},{opacity:op,scale:'1'}],{duration:900,delay:T.stk,easing:SOFT,fill:'backwards'});}
       if(hn){hn.style.opacity='';hn.animate([{opacity:0,translate:'0 6px'},{opacity:1,translate:'0 0'}],{duration:800,delay:T.note,easing:SOFT,fill:'backwards'});}
       hp.forEach(function(pa,i){pa.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:520,delay:T.arrow+i*260,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'});});
-      /* clic simulé : petite pression, puis collecte (couleur + envol vers la barre) ; DOG monte en même temps */
+      /* DOG monte, puis clic simulé une fois le mot écrit : petite pression, collecte (couleur + envol vers la barre) */
       if(hs){setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.animate([{scale:'1'},{scale:'.92',offset:.45},{scale:'1'}],{duration:240,easing:'ease-in-out'});},T.press);
         setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.click();},T.click);}
-      rise(wDog,T.click);
+      rise(wDog,T.dog);
       /* masques relâchés une fois tout en place (le sticker et la note ne sont jamais coupés) */
-      setTimeout(function(){bigL.forEach(function(l){l.style.clipPath='none';});},T.click+1250);
+      setTimeout(function(){bigL.forEach(function(l){l.style.clipPath='none';});},T.dog+1250);
       });});
     });
   }
