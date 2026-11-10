@@ -519,24 +519,37 @@
       lineEls.forEach(function(el){if(el._v3html!=null&&el._v3done){el.innerHTML=el._v3html;}});});
   }
 
-  /* 1a. Hero : sticker entre « LAZY » et « DOG », note manuscrite et flèche — apparition douce après le titre */
-  var hs=document.querySelector('.v3-hero__big .tld-collect'),hn=document.querySelector('.v3-hero__note'),hp=hn?[].slice.call(hn.querySelectorAll('path')):[];
-  if(!reduce){if(hs)hs.style.opacity='0';if(hn)hn.style.opacity='0';
-    hp.forEach(function(pa){pa.setAttribute('pathLength','1');pa.style.strokeDasharray='1';pa.style.strokeDashoffset='1';});}
-  function heroExtras(t){if(reduce)return;
-    if(hs){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
-      hs.animate([{opacity:0,scale:'.8'},{opacity:op,scale:'1'}],{duration:1400,delay:t,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});}
-    if(hn){hn.style.opacity='';hn.animate([{opacity:0,translate:'0 8px'},{opacity:1,translate:'0 0'}],{duration:1200,delay:t+750,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});}
-    hp.forEach(function(pa,i){pa.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:900,delay:t+1150+i*350,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'});});}
-
-  /* 1b. Hero : le titre géant monte ligne par ligne une fois l'intro terminée --------------------- */
-  var big=[].slice.call(document.querySelectorAll('.v3-hero__in'));
-  if(big.length&&!reduce){big.forEach(function(el){el.style.transform='translateY(130%)';});
-    ready(function(){big.forEach(function(el,i){el.style.transform='';
-      el.animate([{transform:'translateY(130%)'},{transform:'none'}],{duration:1400,delay:80+i*130,easing:EXPO,fill:'backwards'});});
-      heroExtras(80+big.length*130+500);
-      /* masque relâché après l'entrée (le sticker et la note ne sont jamais coupés) */
-      setTimeout(function(){[].forEach.call(document.querySelectorAll('.v3-hero__l'),function(l){l.style.clipPath='none';});},80+big.length*130+1450);});}
+  /* 1a. Hero « THE / LAZY · DOG » : chorégraphie après le loader
+     1. THE  2. LAZY  3. le sticker, puis la note et la flèche  4. clic simulé : le sticker prend sa couleur et file
+     dans la collection, et DOG monte au même moment. Chaque mot monte derrière le masque de sa ligne. */
+  var bigL=[].slice.call(document.querySelectorAll('.v3-hero__l')),hs=document.querySelector('.v3-hero__big .tld-collect'),
+      hn=document.querySelector('.v3-hero__note'),hp=hn?[].slice.call(hn.querySelectorAll('path')):[],
+      wThe=document.querySelector('.v3-hero__l:first-child .v3-hero__in'),wLazy=document.querySelector('.v3-hero__lazy'),wDog=null;
+  if(wLazy){var tail=wLazy.parentNode.lastChild; /* « Dog » est un simple texte après le trou : on l'emballe pour l'animer seul */
+    if(tail&&tail.nodeType===3&&tail.textContent.trim()){wDog=document.createElement('span');wDog.className='v3-hero__dog';tail.parentNode.replaceChild(wDog,tail);wDog.appendChild(tail);}}
+  var words=[wThe,wLazy,wDog].filter(Boolean);
+  if(bigL.length&&!reduce){
+    words.forEach(function(w){w.style.transform='translateY(130%)';});
+    if(hs)hs.style.opacity='0';if(hn)hn.style.opacity='0';
+    hp.forEach(function(pa){pa.setAttribute('pathLength','1');pa.style.strokeDasharray='1';pa.style.strokeDashoffset='1';});
+    var SOFT='cubic-bezier(.22,1,.36,1)';
+    function rise(w,t){if(!w)return;setTimeout(function(){w.style.transform='';},t);
+      w.animate([{transform:'translateY(130%)'},{transform:'none'}],{duration:1300,delay:t,easing:EXPO,fill:'backwards'});}
+    ready(function(){
+      var T={the:80,lazy:330,stk:1000,note:1450,arrow:1800,press:2750,click:2950};
+      rise(wThe,T.the);rise(wLazy,T.lazy);
+      if(hs){setTimeout(function(){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
+        hs.animate([{opacity:0,scale:'.8'},{opacity:op,scale:'1'}],{duration:1000,easing:SOFT,fill:'backwards'});},T.stk);}
+      if(hn){setTimeout(function(){hn.style.opacity='';},T.note);hn.animate([{opacity:0,translate:'0 8px'},{opacity:1,translate:'0 0'}],{duration:1000,delay:T.note,easing:SOFT,fill:'backwards'});}
+      hp.forEach(function(pa,i){pa.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:700,delay:T.arrow+i*300,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'});});
+      /* clic simulé : petite pression, puis collecte (couleur + envol vers la barre) ; DOG monte en même temps */
+      if(hs){setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.animate([{scale:'1'},{scale:'.9'},{scale:'1'}],{duration:260,easing:'ease-out'});},T.press);
+        setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.click();},T.click);}
+      rise(wDog,T.click);
+      /* masques relâchés une fois tout en place (le sticker et la note ne sont jamais coupés) */
+      setTimeout(function(){bigL.forEach(function(l){l.style.clipPath='none';});},T.click+1400);
+    });
+  }
   /* « LAZY · DOG » : le trou est calé pour que le sticker soit centré entre les deux mots (comme sur la maquette) */
   var gap=document.querySelector('.v3-hero__gap'),lazy=document.querySelector('.v3-hero__lazy');
   function fitGap(){if(!gap||!lazy)return;var fs=parseFloat(getComputedStyle(gap).fontSize)||1,w=lazy.getBoundingClientRect().width/fs;

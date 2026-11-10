@@ -65,6 +65,7 @@ html.v3 .tld-hero__title .tld-sr{position:static!important;width:auto!important;
 html.v3 .v3-hero__big{position:absolute;left:3.472vw;top:auto;bottom:42px;z-index:1;margin:0;font-family:Xmind,"Instrument Sans",Arial,sans-serif;font-size:10.417vw;font-weight:600;line-height:1;letter-spacing:0;text-transform:uppercase;color:#0c1016;white-space:nowrap}
 html.v3 .v3-hero__l{display:block;clip-path:inset(-.15em -.3em -.2em -.1em)}
 html.v3 .v3-hero__in{display:inline-block}
+html.v3 .v3-hero__lazy,html.v3 .v3-hero__dog{display:inline-block}
 html.v3 .v3-hero__gap{display:inline-block;width:var(--v3-gap,1.1em)}
 /* sticker n°6 dans le trou de « LAZY · DOG », avec la note manuscrite */
 html.v3 .v3-hero__big .tld-collect.is-s6{left:2.645em;top:1.088em;width:.799em;--r:24deg}
