@@ -125,3 +125,5 @@ html.v3 .tld-footer__cols{margin-right:40px}
  html.v3 .tld-footer__nav{margin-left:0}
  html.v3 .tld-footer__cols{margin-right:0}
 }
+/* fondus de fond noir → rouge → bleu → noir : les sections laissent voir la couleur du body (pilotée par bg-fade.js) */
+html.v3 .tld-news,html.v3 .tld-contact,html.v3 .tld-footer{background-color:transparent}
