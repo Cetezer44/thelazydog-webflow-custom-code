@@ -225,6 +225,32 @@
   els.forEach(function(el){io.observe(el);});
 })();
 
+/* --- src/home/work-video.js --- */
+/* The Lazy Dog — vidéos des projets.
+   .tld-work__media[data-video="https://…mp4"] (champ CMS « Vidéo » de la collection Projets) : l'image de couverture est
+   remplacée par la vidéo, muette et en boucle, avec l'image en poster. La vidéo ne se charge qu'à l'approche de l'écran
+   et se met en pause quand elle en sort (économie de bande passante). Sans lien vidéo, l'image reste. À charger avant parallax.js. */
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var vids=[].slice.call(document.querySelectorAll('.tld-work__media[data-video]')).map(function(m){
+    var src=(m.getAttribute('data-video')||'').trim();if(!src)return null;
+    var img=null;[].some.call(m.querySelectorAll('img'),function(i){if(!i.closest('.tld-work__hover')){img=i;return true;}});
+    var v=document.createElement('video');
+    v.muted=true;v.loop=true;v.playsInline=true;v.preload='none';
+    v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('loop','');v.setAttribute('aria-hidden','true');
+    if(img){v.className=img.className+' tld-work__video';v.poster=img.currentSrc||img.src;img.parentNode.insertBefore(v,img);img.parentNode.removeChild(img);}
+    else{v.className='tld-work__img tld-work__video';m.insertBefore(v,m.firstChild);}
+    v.style.objectFit='cover';v.style.display='block';v.style.width='100%';v.style.height='100%';
+    v._src=src;return v;
+  }).filter(Boolean);
+  if(!vids.length)return;
+  function load(v){if(!v.src){v.src=v._src;}}
+  function play(v){load(v);if(reduce)return;var p=v.play();if(p&&p.catch)p.catch(function(){});}
+  if(!('IntersectionObserver' in window)){vids.forEach(play);return;}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)play(e.target);else if(e.target.src)e.target.pause();});},{rootMargin:'300px 0px'});
+  vids.forEach(function(v){io.observe(v);});
+})();
+
 /* --- src/home/parallax.js --- */
 /* The Lazy Dog — parallax au scroll.
    [data-parallax] et .tld-work__media (cadre en overflow:hidden) : l'image à l'intérieur glisse plus lentement que le cadre. Valeur = amplitude (défaut 0.12 = 12 % de la hauteur).
@@ -233,7 +259,7 @@
 (function(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   var frames=[].slice.call(document.querySelectorAll('[data-parallax],.tld-work__media')).map(function(el){
-    var img=el.querySelector('img');if(img&&img.closest('.tld-work__hover'))img=null;if(!img)return null;
+    var img=el.querySelector('video')||el.querySelector('img');if(img&&img.closest('.tld-work__hover'))img=null;if(!img)return null; /* vidéo du projet (work-video.js) ou image */
     var a=parseFloat(el.getAttribute('data-parallax'));if(!(a>0))a=el.hasAttribute('data-parallax')?.12:.07; /* projets : parallax léger */
     img.style.position='absolute';img.style.left='0';img.style.width='100%';img.style.maxWidth='none';
     img.style.top=(-a*100)+'%';img.style.height=((1+2*a)*100)+'%';img.style.objectFit='cover';img.style.willChange='transform';

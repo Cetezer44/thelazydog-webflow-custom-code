@@ -9,7 +9,7 @@ const bundles = {
   // Accueil v2 — réutilise le loader, l'œil, les stickers à collectionner et le fondu vers le noir de la v1
   'home-v2': ['src/home/loader.js', 'src/home/eye.js', 'src/home/collect.js', 'src/home/bg-fade.js', 'src/home-v2/core.js', 'src/home-v2/intro.js', 'src/home-v2/head.js', 'src/home-v2/reel.js', 'src/home-v2/words.js', 'src/home-v2/index.js', 'src/home-v2/acc.js', 'src/home-v2/contact.js'],
   // Accueil v3 — la v1 sans les modules devenus inactifs (stickers physiques, croissance du showreel, section jaune, projets épinglés, ancres) + couche d'animations v3
-  'home-v3': ['src/home/loader.js', 'src/home/eye.js', 'src/home/showreel.js', 'src/home/words.js', 'src/home/parallax.js', 'src/home/reveal.js', 'src/home/collect.js', 'src/home/services.js', 'src/home/works.js', 'src/home/bg-fade.js', 'src/home-v3/motion.js'],
+  'home-v3': ['src/home/loader.js', 'src/home/eye.js', 'src/home/showreel.js', 'src/home/words.js', 'src/home/work-video.js', 'src/home/parallax.js', 'src/home/reveal.js', 'src/home/collect.js', 'src/home/services.js', 'src/home/works.js', 'src/home/bg-fade.js', 'src/home-v3/motion.js'],
   // Toutes les pages
   global: ['node_modules/lenis/dist/lenis.min.js', 'src/global/smooth.js', 'src/global/cursor.js'],
 };
