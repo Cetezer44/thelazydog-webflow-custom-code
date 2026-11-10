@@ -88,9 +88,9 @@
       });});
     });
   }
-  /* 1c. Hero : le texte d'intro (h1) et le showreel s'effacent quand la section projets commence à arriver
+  /* 1c. Hero : le texte d'intro (h1), le showreel et « THE LAZY DOG » s'effacent quand la section projets commence à arriver
      (visibles tant que son haut est sous 85 % de l'écran, invisibles à 40 %), avec une légère remontée. */
-  var fadeEls=[document.querySelector('.tld-hero__head'),document.querySelector('.tld-hero .tld-reel')].filter(Boolean),
+  var fadeEls=[document.querySelector('.tld-hero__head'),document.querySelector('.tld-hero .tld-reel'),document.querySelector('.v3-hero__big')].filter(Boolean),
       sec2=document.querySelector('.tld-works'),fTick=false,fLast=-1;
   function heroFade(){fTick=false;if(!sec2)return;var t=sec2.getBoundingClientRect().top/window.innerHeight,
       k=Math.max(0,Math.min(1,(t-.4)/(.85-.4)));k=Math.round(k*1000)/1000;if(k===fLast)return;fLast=k;

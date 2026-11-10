@@ -49,93 +49,36 @@ html.v3 .tld-eye:active{scale:.94}
  html.v3 .v3-ch{transition:none}
 }
 
-/* ==== Maquette du 10 nov. (Homepage 107:248) — appliquée à la v3 uniquement ==== */
-/* nav : Projets · Services · Studio à gauche, Contact · Social à droite */
-html.v3 .tld-nav__link{font-weight:300}
-html.v3 .tld-nav__link.is-tr{left:238px;right:auto}
-html.v3 .tld-nav__link.is-br{right:122px}
-html.v3 .tld-nav__link.is-vr{top:30px;right:30px;bottom:auto;left:auto;writing-mode:horizontal-tb;transform:none}
-/* hero : texte d'intro en haut à droite, « THE LAZY DOG » géant, showreel en vignette */
-html.v3 .tld-hero{height:100vh;height:100svh;min-height:720px;padding:0!important;overflow:clip}
-html.v3 .tld-hero__head{position:absolute;top:314px;left:50%;width:322px;max-width:none!important;margin:0!important}
-html.v3 .tld-hero__title{max-width:none!important;margin:0;font-size:18px!important;font-weight:300!important;line-height:1.2;letter-spacing:0;text-align:left!important;text-indent:0!important;color:#0c1016!important;mix-blend-mode:normal!important;--indent:0}
+/* ==== Maquette du 10 nov. (Homepage 107:248) ====
+   La mise en page (positions, tailles, couleurs, typo, breakpoints) est maintenant dans le Designer, sur les combo classes « v3 »
+   de la page v3 (ex. .tld-hero.v3, .tld-collect.is-s1.v3, .tld-nav__link.is-vr.v3) et sur les classes v3-hero__* / tld-contact__cta.
+   Ne restent ici que les règles que le Designer ne sait pas exprimer : sélecteurs descendants ou d'état, masques (clip-path),
+   variables CSS, transformations, éléments créés par les scripts ou dans des embeds HTML. */
+/* h1 : le texte n'est plus indenté (variable du code v1) et « The Lazy Dog » redevient visible */
+html.v3 .tld-hero__title{--indent:0}
 html.v3 .tld-hero__title .tld-line:first-child{text-indent:0}
 html.v3 .tld-hero__title strong{font-weight:300}
 html.v3 .tld-hero__title .tld-sr{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;white-space:normal!important}
-html.v3 .v3-hero__big{position:absolute;left:3.472vw;top:auto;bottom:42px;z-index:1;margin:0;font-family:Xmind,"Instrument Sans",Arial,sans-serif;font-size:10.417vw;font-weight:600;line-height:1;letter-spacing:0;text-transform:uppercase;color:#0c1016;white-space:nowrap}
-html.v3 .v3-hero__l{display:block;clip-path:inset(-.15em -.3em -.2em -.1em)}
-html.v3 .v3-hero__in{display:inline-block}
-html.v3 .v3-hero__lazy,html.v3 .v3-hero__dog{display:inline-block}
-html.v3 .v3-hero__gap{display:inline-block;width:var(--v3-gap,1.1em)}
-/* sticker n°6 dans le trou de « LAZY · DOG », avec la note manuscrite */
-html.v3 .v3-hero__big .tld-collect.is-s6{left:2.645em;top:1.088em;width:.799em;--r:24deg}
-html.v3 .v3-hero__note{position:absolute;left:34.62em;top:7.743em;z-index:5;display:block;font-family:"Sedgwick Ave",cursive;font-size:.1em;font-weight:400;line-height:1.2;text-align:center;text-transform:none;white-space:nowrap;color:#0c1016;transform:translate(-50%,-50%) rotate(-11.56deg);pointer-events:none}
+/* « THE / LAZY · DOG » : masque de chaque ligne, mot DOG créé par le script, trou calé par le script */
+html.v3 .v3-hero__l{clip-path:inset(-.15em -.3em -.2em -.1em)}
+html.v3 .v3-hero__dog{display:inline-block}
+html.v3 .v3-hero__gap{width:var(--v3-gap,1.1em)}
+/* note manuscrite : police Google (hors polices du site), inclinaison et flèche */
+html.v3 .v3-hero__note{font-family:"Sedgwick Ave",cursive;transform:translate(-50%,-50%) rotate(-11.56deg)}
 html.v3 .v3-hero__note svg{position:absolute;left:-.75em;top:1.55em;width:.6em;height:1em;overflow:visible}
-html.v3 .tld-reel{position:absolute!important;right:30px;bottom:61px;top:auto;left:auto;z-index:2;width:clamp(200px,18.54vw,360px)!important;height:auto!important;max-width:none!important;margin:0!important;aspect-ratio:267/157.66!important;border-radius:5px!important}
-/* showreel du hero : simple vignette en lecture, aucun pictogramme ni effet au survol pour le moment */
+/* showreel du hero : simple vignette, sans pictogramme (le curseur vit dans un embed) */
 html.v3 .tld-hero .tld-reel__cursor{display:none!important}
-html.v3 .tld-hero .tld-reel{cursor:auto;pointer-events:none}
-/* barre des stickers : verticale, fixe à droite */
-html.v3 .tld-collect-bar{left:auto;right:11.4px;top:230px;bottom:auto} /* colonne de 30 px calée à 30 px du bord (les slots tournés débordent de 19,4 px) */
-/* stickers à collectionner : nouvelles positions (centre et taille réelle relevés sur la maquette) */
-html.v3 .tld-collect.is-s1{--r:20.26deg;left:8.39%;top:1585px;width:clamp(120px,14.09vw,203px)}
-html.v3 .tld-collect.is-s7{left:77.89%;top:769px;width:clamp(70px,7.3vw,105px)}
+/* barre des stickers (embed) : verticale, fixe à droite ; colonne de 30 px calée à 30 px du bord (les slots tournés débordent de 19,4 px) */
+html.v3 .tld-collect-bar{left:auto;right:11.4px;top:230px;bottom:auto}
+@media (max-width:767px){html.v3 .tld-collect-bar{left:20px;right:auto;top:auto;bottom:20px}}
+/* stickers : inclinaison du n°1 (variable CSS) et n°5 plus discret tant qu'il n'est pas collectionné */
+html.v3 .tld-collect.is-s1{--r:20.26deg}
 html.v3 .tld-services .tld-collect:not(.is-collected){opacity:.1}
-html.v3 .tld-collect.is-s4{left:73.53%;top:213px;width:clamp(70px,7.91vw,114px)}
-html.v3 .tld-collect.is-s3{left:11.98%;top:193px;width:clamp(80px,9.44vw,136px)}
-/* le n°3 vit maintenant dans « Reste informé » ; un éventuel doublon resté dans le footer est masqué */
-html.v3 .tld-footer>.tld-collect.is-s3{display:none!important}
-/* projets : 100 px de plus au-dessus (maquette du 10 nov., 11 h 37) */
-@media (min-width:768px){html.v3 .tld-works{padding-top:339px;padding-bottom:301px}}
-/* newsletter */
-html.v3 .tld-news{height:800px;background-color:#f43210}
-html.v3 .tld-news__star{top:170px}
-html.v3 .tld-news__side{top:386px}
-html.v3 .tld-news__form{margin-top:244px}
-html.v3 .tld-news__form{max-width:512px}
-html.v3 .tld-service__fill{background-color:#f43210}
-/* contact */
-html.v3 .tld-contact{height:800px;background-color:#2146ff}
-html.v3 .tld-contact__text{max-width:471px;font-size:30px}
-html.v3 .tld-contact__cta{display:inline-block;margin-top:76px;padding:8px 10px;background-color:#0c1016;font-family:Xmind,sans-serif;font-size:15px;font-weight:300;line-height:1.2;color:#f3efe9;text-decoration:none;transition:opacity .2s ease}
-html.v3 .tld-contact__cta:hover{opacity:.85}
-html.v3 .tld-contact__links{top:602px}
-/* footer */
-html.v3 .tld-footer__nav{margin-left:40px}
-html.v3 .tld-footer__cols{margin-right:40px}
-@media (max-width:991px){
- html.v3 .tld-hero__head{left:auto;right:40px;width:300px;top:180px}
- html.v3 .tld-nav__link.is-tr{left:220px}
-}
-@media (max-width:767px){
- html.v3 .tld-nav__link{font-size:12px}
- html.v3 .tld-nav__link.is-tl{top:20px;left:20px}
- html.v3 .tld-nav__link.is-bl{top:20px;left:84px}
- html.v3 .tld-nav__link.is-tr{top:20px;left:154px}
- html.v3 .tld-nav__link.is-br{top:20px;right:76px;bottom:auto}
- html.v3 .tld-nav__link.is-vr{top:20px;right:20px}
- html.v3 .tld-hero__head{left:20px;right:20px;width:auto;top:120px}
- html.v3 .tld-hero__title{font-size:17px!important}
- html.v3 .v3-hero__big{left:20px;top:auto;bottom:calc(20px + 30vw + 90px);font-size:15vw}
- html.v3 .v3-hero__note{display:none}
- html.v3 .tld-reel{right:20px;bottom:70px;width:52vw!important}
- html.v3 .tld-collect-bar{left:20px;right:auto;top:auto;bottom:20px}
- html.v3 .tld-collect.is-s1{left:auto;right:10px;top:42%;width:120px}
- html.v3 .tld-collect.is-s3{left:auto;right:16px;top:24px;width:90px}
- html.v3 .tld-news{height:auto}
- html.v3 .tld-news__form{margin-top:32px}
- html.v3 .tld-contact{height:auto}
- html.v3 .tld-contact__text{font-size:22px}
- html.v3 .tld-contact__cta{margin-top:40px}
- html.v3 .tld-footer__nav{margin-left:0}
- html.v3 .tld-footer__cols{margin-right:0}
-}
-/* fondus de fond noir → rouge → bleu → noir : les sections laissent voir la couleur du body (pilotée par bg-fade.js) */
-html.v3 .tld-news,html.v3 .tld-contact,html.v3 .tld-footer{background-color:transparent}
-/* garde-fou : un éventuel doublon du sticker n°6 resté dans la section projets est masqué (le n°6 vit dans le hero) */
+/* garde-fous : doublons éventuels laissés par le Designer après déplacement (n°6 dans le hero, n°3 dans « Reste informé ») */
 html.v3 .tld-works>.tld-collect.is-s6{display:none!important}
-/* projets : le 4e projet descend (maquette du 10 nov. : 302 px sous le haut du 3e, soit 24,35 % de la largeur utile) */
-@media (min-width:768px){html.v3 .tld-works__item:nth-child(4){margin-top:49.27%}}
+html.v3 .tld-footer>.tld-collect.is-s3{display:none!important}
+/* projets : 100 px de plus au-dessus et 4e projet plus bas (le padding mobile de la classe reste celui du Designer) */
+@media (min-width:768px){html.v3 .tld-works{padding-top:339px;padding-bottom:301px}html.v3 .tld-works__item:nth-child(4){margin-top:49.27%}}
 /* services au survol : les autres colonnes rouges se retirent de haut en bas (masque), puis se reconstruisent de bas en haut
    à la sortie ; la colonne survolée monte déjà de bas en haut (services.js) */
 html.v3 .tld-service__fill{clip-path:inset(0 0 0 0);transition:clip-path .6s cubic-bezier(.65,0,.35,1)}
