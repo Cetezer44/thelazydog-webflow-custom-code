@@ -87,3 +87,10 @@ html.v3 .tld-services.is-hovering .tld-service:not(.is-hover) .tld-service__fill
 /* services : la vidéo de fond (créée par services.js) couvre toute la section noire, recadrée au centre */
 html.v3 .tld-services__bg{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden}
 html.v3 .tld-services__bg video{position:absolute;top:0;left:0;width:100%!important;height:100%!important;max-width:none;object-fit:cover;object-position:50% 50%}
+/* showreel en grand (reel-modal.js) : fond noir 80 %, vidéo centrée en 16:9, sans contrôles */
+.tld-reelbox{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9998;background-color:rgba(0,0,0,.8)}
+.tld-reelbox[hidden]{display:none}
+.tld-reelbox:focus{outline:none}
+.tld-reelbox__video{position:absolute;display:block;max-width:none;object-fit:cover;border-radius:5px;background-color:#000;transform-origin:0 0;will-change:transform}
+html.tld-reelbox-open,html.tld-reelbox-open body{overflow:hidden}
+html.v3 .tld-hero .tld-reel{pointer-events:auto}
