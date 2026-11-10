@@ -97,7 +97,7 @@
      - le texte d'intro (h1) s'efface en suivant le scroll ;
      - « THE LAZY DOG » part d'un coup vers le haut (chaque mot sort par le haut de son masque, le sticker et la note
        montent en s'effaçant), puis le showreel disparaît derrière un masque, avec un léger décalage.
-     Déclenché quand le haut des projets passe sous 70 % de l'écran ; tout revient quand on remonte (au-dessus de 78 %). */
+     Déclenché quand le haut des projets passe sous 40 % de l'écran ; tout revient, plus vite, dès qu'il repasse au-dessus de 46 %. */
   var fadeEls=[document.querySelector('.tld-hero__head')].filter(Boolean),reelEl=document.querySelector('.tld-hero .tld-reel'),
       sec2=document.querySelector('.tld-works'),fTick=false,fLast=-1,heroHidden=false,exitAnims=[];
   function buildExit(){
@@ -113,12 +113,13 @@
     if(h===heroHidden)return;heroHidden=h;
     if(reduce){[document.querySelector('.v3-hero__big'),reelEl].forEach(function(el){if(el){el.style.transition='opacity .3s';el.style.opacity=h?'0':'';}});return;}
     if(h){if(!exitAnims.length)buildExit();exitAnims.forEach(function(a){a.playbackRate=1;a.play();});}
-    else{exitAnims.forEach(function(a){a.playbackRate=-1;a.play();});
+    else{exitAnims.forEach(function(a){a.playbackRate=-1.6;a.play();}); /* retour plus rapide que la sortie */
       Promise.all(exitAnims.map(function(a){return a.finished;})).then(function(){
         if(heroHidden)return;exitAnims.forEach(function(a){a.cancel();});exitAnims=[];bigL.forEach(function(l){l.style.clipPath='none';});});}
   }
   function heroScroll(){fTick=false;if(!sec2)return;var t=sec2.getBoundingClientRect().top/window.innerHeight;
-    if(t<.7)setHeroHidden(true);else if(t>.78)setHeroHidden(false);
+    /* le hero part quand il est déjà à moitié sorti de l'écran, et revient dès qu'on remonte un peu (petit écart anti-clignotement) */
+    if(t<.4)setHeroHidden(true);else if(t>.46)setHeroHidden(false);
     var k=Math.max(0,Math.min(1,(t-.4)/(.85-.4)));k=Math.round(k*1000)/1000;if(k===fLast)return;fLast=k;
     var e=k*k*(3-2*k);
     fadeEls.forEach(function(el){if(k>=1){el.style.opacity='';el.style.translate='';el.style.visibility='';return;}
