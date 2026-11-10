@@ -53,8 +53,8 @@
   }
 
   /* 1a. Hero « THE / LAZY · DOG » : chorégraphie après le loader
-     1. THE  2. LAZY  3. le sticker, puis la note et la flèche  4. DOG  5. clic simulé : le sticker prend sa couleur et file
-     dans la collection. Chaque mot monte derrière le masque de sa ligne. */
+     1. THE  2. LAZY DOG (la ligne entière, DOG collé à LAZY)  3. DOG glisse à droite et ouvre le trou
+     4. le sticker, puis la note et la flèche  5. clic simulé : le sticker prend sa couleur et file dans la collection. Chaque mot monte derrière le masque de sa ligne. */
   var bigL=[].slice.call(document.querySelectorAll('.v3-hero__l')),hs=document.querySelector('.v3-hero__big .tld-collect'),
       hn=document.querySelector('.v3-hero__note'),hp=hn?[].slice.call(hn.querySelectorAll('path')):[],
       wThe=document.querySelector('.v3-hero__l:first-child .v3-hero__in'),wLazy=document.querySelector('.v3-hero__lazy'),wDog=null;
@@ -62,19 +62,25 @@
     if(tail&&tail.nodeType===3&&tail.textContent.trim()){wDog=document.createElement('span');wDog.className='v3-hero__dog';tail.parentNode.replaceChild(wDog,tail);wDog.appendChild(tail);}}
   var words=[wThe,wLazy,wDog].filter(Boolean);
   if(bigL.length&&!reduce){
-    words.forEach(function(w){w.style.transform='translateY(130%)';});
+    var line2=wLazy?wLazy.parentNode:null,intro=[wThe,line2].filter(Boolean);
+    intro.forEach(function(w){w.style.transform='translateY(130%)';});
+    if(wDog)wDog.style.transform='translateX(-50em)'; /* recalé juste avant le départ (largeur du trou connue) */
     if(hs)hs.style.opacity='0';if(hn)hn.style.opacity='0';
     hp.forEach(function(pa){pa.setAttribute('pathLength','1');pa.style.strokeDasharray='1';pa.style.strokeDashoffset='1';});
     var SOFT='cubic-bezier(.22,1,.36,1)',RISE='cubic-bezier(.16,1,.3,1)';
-    words.forEach(function(w){w.style.willChange='transform';});
+    intro.concat(wDog||[]).forEach(function(w){w.style.willChange='transform';});
     /* chaque élément part de son état caché grâce à fill:'backwards' pendant son délai : aucun style modifié en cours de route */
     function rise(w,t){if(!w)return;w.style.transform='';
       w.animate([{transform:'translateY(115%)'},{transform:'translateY(0)'}],{duration:1150,delay:t,easing:RISE,fill:'backwards'})
        .onfinish=function(){w.style.willChange='';};}
     ready(function(){fitGap(); /* trou calé avant le départ : DOG ne bouge plus ensuite */
       requestAnimationFrame(function(){requestAnimationFrame(function(){ /* laisse le loader se retirer avant de démarrer */
-      var T={the:0,lazy:180,stk:760,note:1060,arrow:1320,dog:1650,press:3350,click:3530};
-      rise(wThe,T.the);rise(wLazy,T.lazy);
+      var T={the:0,line2:200,dog:1150,stk:1850,note:2300,arrow:2550,press:3900,click:4080};
+      rise(wThe,T.the);rise(line2,T.line2);
+      /* DOG part collé à LAZY (un espace normal), puis glisse à droite jusqu'à sa place */
+      if(wDog){var gw=gap?gap.getBoundingClientRect().width:0,shift=-Math.max(0,gw-.26*parseFloat(getComputedStyle(wDog).fontSize));
+        wDog.style.transform='';wDog.animate([{transform:'translateX('+shift.toFixed(1)+'px)'},{transform:'translateX(0)'}],{duration:1000,delay:T.dog,easing:'cubic-bezier(.65,0,.2,1)',fill:'backwards'})
+          .onfinish=function(){wDog.style.willChange='';};}
       if(hs){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
         hs.animate([{opacity:0,scale:'.85'},{opacity:op,scale:'1'}],{duration:900,delay:T.stk,easing:SOFT,fill:'backwards'});}
       if(hn){hn.style.opacity='';hn.animate([{opacity:0,translate:'0 6px'},{opacity:1,translate:'0 0'}],{duration:800,delay:T.note,easing:SOFT,fill:'backwards'});}
@@ -82,9 +88,8 @@
       /* DOG monte, puis clic simulé une fois le mot écrit : petite pression, collecte (couleur + envol vers la barre) */
       if(hs){setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.animate([{scale:'1'},{scale:'.92',offset:.45},{scale:'1'}],{duration:240,easing:'ease-in-out'});},T.press);
         setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.click();},T.click);}
-      rise(wDog,T.dog);
       /* masques relâchés une fois tout en place (le sticker et la note ne sont jamais coupés) */
-      setTimeout(function(){bigL.forEach(function(l){l.style.clipPath='none';});},T.dog+1250);
+      setTimeout(function(){bigL.forEach(function(l){l.style.clipPath='none';});},T.dog+1200);
       });});
     });
   }
