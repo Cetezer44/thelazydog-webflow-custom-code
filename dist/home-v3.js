@@ -564,7 +564,8 @@
     var line2=wLazy?wLazy.parentNode:null,intro=[wThe,line2].filter(Boolean);
     intro.forEach(function(w){w.style.transform='translateY(130%)';});
     if(wDog)wDog.style.transform='translateX(-50em)'; /* recalé juste avant le départ (largeur du trou connue) */
-    if(hs)hs.style.opacity='0';if(hn)hn.style.opacity='0';
+    /* le sticker du titre est montré directement en couleur (comme déjà collectionné) : filtre et opacité forcés en ligne */
+    if(hs){hs.style.opacity='0';hs.style.filter='none';hs.style.transition='none';}if(hn)hn.style.opacity='0';
     hp.forEach(function(pa){pa.setAttribute('pathLength','1');pa.style.strokeDasharray='1';pa.style.strokeDashoffset='1';});
     var SOFT='cubic-bezier(.22,1,.36,1)',RISE='cubic-bezier(.16,1,.3,1)';
     intro.concat(wDog||[]).forEach(function(w){w.style.willChange='transform';});
@@ -574,19 +575,23 @@
        .onfinish=function(){w.style.willChange='';};}
     ready(function(){fitGap(); /* trou calé avant le départ : DOG ne bouge plus ensuite */
       requestAnimationFrame(function(){requestAnimationFrame(function(){ /* laisse le loader se retirer avant de démarrer */
-      var T={the:0,line2:200,dog:1150,stk:1850,note:2300,arrow:2550,press:3900,click:4080};
+      var T={the:0,line2:200,dog:1150,stk:1850,note:2300,arrow:2550,press:3250,click:3610};
       rise(wThe,T.the);rise(line2,T.line2);
       /* DOG part collé à LAZY (un espace normal), puis glisse à droite jusqu'à sa place */
       if(wDog){var gw=gap?gap.getBoundingClientRect().width:0,shift=-Math.max(0,gw-.26*parseFloat(getComputedStyle(wDog).fontSize));
         wDog.style.transform='';wDog.animate([{transform:'translateX('+shift.toFixed(1)+'px)'},{transform:'translateX(0)'}],{duration:1000,delay:T.dog,easing:'cubic-bezier(.65,0,.2,1)',fill:'backwards'})
           .onfinish=function(){wDog.style.willChange='';};}
-      if(hs){hs.style.opacity='';var op=getComputedStyle(hs).opacity;
-        hs.animate([{opacity:0,scale:'.85'},{opacity:op,scale:'1'}],{duration:900,delay:T.stk,easing:SOFT,fill:'backwards'});}
+      /* apparition en scale, en couleur, avec un léger dépassement */
+      if(hs){hs.style.opacity='1';
+        hs.animate([{opacity:0,scale:'0'},{opacity:1,scale:'1.12',offset:.62},{scale:'.96',offset:.84},{opacity:1,scale:'1'}],{duration:800,delay:T.stk,easing:'cubic-bezier(.3,0,.3,1)',fill:'backwards'});}
       if(hn){hn.style.opacity='';hn.animate([{opacity:0,translate:'0 6px'},{opacity:1,translate:'0 0'}],{duration:800,delay:T.note,easing:SOFT,fill:'backwards'});}
       hp.forEach(function(pa,i){pa.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:520,delay:T.arrow+i*260,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'});});
       /* DOG monte, puis clic simulé une fois le mot écrit : petite pression, collecte (couleur + envol vers la barre) */
-      if(hs){setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.animate([{scale:'1'},{scale:'.92',offset:.45},{scale:'1'}],{duration:240,easing:'ease-in-out'});},T.press);
-        setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.click();},T.click);}
+      /* « clic » : le sticker s'enfonce puis rebondit, et file se ranger dans la collection */
+      if(hs){setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.animate([{scale:'1'},{scale:'.84',offset:.35},{scale:'1.1',offset:.72},{scale:'1'}],{duration:420,easing:'cubic-bezier(.3,0,.3,1)'});},T.press);
+        setTimeout(function(){if(!hs.classList.contains('is-collected'))hs.click();
+          /* la classe is-collected garde la couleur : on rend la main au CSS (transitions comprises) */
+          requestAnimationFrame(function(){hs.style.filter='';hs.style.opacity='';hs.style.transition='';});},T.click);}
       /* masques relâchés une fois tout en place (le sticker et la note ne sont jamais coupés) */
       setTimeout(function(){bigL.forEach(function(l){l.style.clipPath='none';});},T.dog+1200);
       });});
